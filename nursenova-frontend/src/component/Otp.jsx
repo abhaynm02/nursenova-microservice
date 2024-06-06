@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { otpVerify,reSendOpt } from '../api/user';
+import { otpVerificationForgotpassword, otpVerify,reSendOpt } from '../api/user';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 const Otp = () => {
   const [otp, setOtp] = useState('');
@@ -9,12 +10,22 @@ const Otp = () => {
   const [resendDisabled, setResendDisabled] = useState(true);
   const [resendTime, setResendTime] = useState(60);
   const[email,setEmail]=useState('');
+  const[endPoint,setEntpoint]=useState('');
   const location =useLocation();
   const navigate=useNavigate();
+  const name = useSelector((state) => state.auth.email);
+  if(name){
+    navigate(-1);
+  }
 
   useEffect(() => {
     if (location.state && location.state.userId) {
       setEmail(location.state.userId);
+    }
+    if(location.state && location.state.name){
+      console.log(location.state.name)
+      setEntpoint(location.state.name);
+
     }
   }, [location.state]);
 
@@ -33,10 +44,13 @@ const Otp = () => {
   const handleResend =async () => {
    try{
     
+    const data={
+      email:email
+    }
     const response =await reSendOpt(data);
-    console.log(response)
+    console.log(response.data)
     if(response){
-      toast.success(response.data.message)
+      toast.success(response.data)
     }
 
    }catch(error){
@@ -56,12 +70,22 @@ const Otp = () => {
           email:email,
           otp:otp
         }
-    
-        const response =await otpVerify(data);
-        if(response){
-          navigate('/login')
-         
+        if(endPoint){
+          console.log("forgot password route ")
+          const response =await otpVerificationForgotpassword(data); 
+          if(response){
+            navigate('/password-submit',{ state: { userId: email}})
+          }
+        }else{
+          const response =await otpVerify(data);
+          if(response){
+            navigate('/login')
+           
+          }
+
         }
+  
+       
     
        }catch(error){
     
@@ -82,7 +106,7 @@ const Otp = () => {
     <div className="mx-auto flex justify-center items-center min-h-screen w-full bg-center bg-cover relative">
       <div
         className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: "url('src/assets/nurse_helping_in_home-2000x660-1.jpg')", opacity: 0.7 }}
+        style={{ backgroundImage: "url('/nurse_helping_in_home-2000x660-1.jpg')", opacity: 0.7 }}
       ></div>
       <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-20 z-10">
         <form

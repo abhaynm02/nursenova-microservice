@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {signup} from "../api/user";
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -12,6 +13,10 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
   const navigate=useNavigate();
+  const name = useSelector((state) => state.auth.email);
+  if(name){
+    navigate(-1)
+  }
 
   const handleSubmit = async (e) => {
     try{
@@ -40,6 +45,7 @@ const Register = () => {
    
   };
 
+
   const validate = () => {
     const newErrors = {};
     if (!firstname.trim()) newErrors.firstname = 'Firstname is required';
@@ -60,7 +66,7 @@ const Register = () => {
     <div className="mx-auto flex justify-center items-center sm:grid-cols-2 min-h-screen w-full bg-center bg-cover relative">
       <div
         className="absolute inset-0 bg-cover bg-center z-0"
-        style={{backgroundImage:"url('src/assets/nurse_helping_in_home-2000x660-1.jpg')", opacity: 0.5}}
+        style={{backgroundImage:"url('/nurse_helping_in_home-2000x660-1.jpg')", opacity: 0.5}}
       ></div>
       <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-20 z-10">
   <form onSubmit={handleSubmit} className="max-w-[700px] w-full mx-auto bg-white p-12 rounded-2xl shadow-2xl">
@@ -71,7 +77,7 @@ const Register = () => {
       <div className="flex flex-col">
         <label className="font-semibold mb-2">Firstname</label>
         <input
-          onChange={(e) => setFirstname(e.target.value)}
+          onChange={(e) =>{ setFirstname(e.target.value); validate() }}
           className={`border p-3 rounded-md ${errors.firstname ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-green-400`}
           type="text"
           placeholder="John"
@@ -82,7 +88,7 @@ const Register = () => {
       <div className="flex flex-col">
         <label className="font-semibold mb-2">Lastname</label>
         <input
-          onChange={(e) => setLastname(e.target.value)}
+          onChange={(e) =>{ setLastname(e.target.value);validate()}}
           className={`border p-3 rounded-md ${errors.lastname ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-green-400`}
           type="text"
           placeholder="Doe"
@@ -95,10 +101,10 @@ const Register = () => {
       <div className="flex flex-col">
         <label className="font-semibold mb-2">Phone</label>
         <input
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) =>{ setPhone(e.target.value);validate()}}
           className={`border p-3 rounded-md ${errors.phone ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-green-400`}
           type="text"
-          placeholder="(123) 456-7890"
+          placeholder="1234567890"
         />
         {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
       </div>
@@ -106,7 +112,7 @@ const Register = () => {
       <div className="flex flex-col">
         <label className="font-semibold mb-2">Email</label>
         <input
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) =>{ setEmail(e.target.value);validate()}}
           className={`border p-3 rounded-md ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-green-400`}
           type="email"
           placeholder="john@example.com"
@@ -119,7 +125,7 @@ const Register = () => {
       <div className="flex flex-col">
         <label className="font-semibold mb-2">Password</label>
         <input
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) =>{ setPassword(e.target.value);validate()}}
           className={`border p-3 rounded-md ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-green-400`}
           type="password"
           placeholder="Enter your password"
@@ -130,7 +136,7 @@ const Register = () => {
       <div className="flex flex-col">
         <label className="font-semibold mb-2">Confirm Password</label>
         <input
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e) => {setConfirmPassword(e.target.value);validate()}}
           className={`border p-3 rounded-md ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-green-400`}
           type="password"
           placeholder="Re-enter your password"

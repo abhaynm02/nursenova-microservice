@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../api/user";
-import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { setRole, setToken,setEmail } from "../redux/AuthSlice";
+
+
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmaill] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const navigate =useNavigate();
+  const dispatch = useDispatch();
+
 
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -21,8 +26,21 @@ const Login = () => {
       const response =await login(data);
 
       if(response){
-        toast.success("welcome to home ");
-          navigate('/home');
+        console.log(response.data)
+        dispatch(setEmail(response.data.username));
+        dispatch(setRole(response.data.role));
+        dispatch(setToken(response.data.token))
+        console.log(response.data.role)
+        const role= response.data.role;
+        if (role === "USER") {
+        
+          console.log("hello in admin ");
+          navigate("/");
+        } else if (role === "ADMIN") {
+          console.log("hello in user ");
+          navigate("/admin/");
+          
+        }
 
       }
     }
@@ -43,7 +61,7 @@ const Login = () => {
     <div className="mx-auto flex justify-center items-center min-h-screen w-full bg-center bg-cover relative">
       <div
         className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: "url('src/assets/nurse_helping_in_home-2000x660-1.jpg')", opacity: 0.7 }}
+        style={{ backgroundImage: "url('/nurse_helping_in_home-2000x660-1.jpg')", opacity: 0.7 }}
       ></div>
       <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-20 z-10">
   <form
@@ -66,7 +84,7 @@ const Login = () => {
         <label htmlFor="email" className="font-semibold mb-2">Email</label>
         <input
           id="email"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) =>{ setEmaill(e.target.value);validate()}}
           className={`border p-3 rounded-md ${
             errors.email ? "border-red-500" : "border-gray-300"
           } focus:outline-none focus:ring-2 focus:ring-green-400`}
@@ -80,7 +98,7 @@ const Login = () => {
         <label htmlFor="password" className="font-semibold mb-2">Password</label>
         <input
           id="password"
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {setPassword(e.target.value),validate()}}
           className={`border p-3 rounded-md ${
             errors.password ? "border-red-500" : "border-gray-300"
           } focus:outline-none focus:ring-2 focus:ring-green-400`}

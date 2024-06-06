@@ -3,6 +3,8 @@ import { NavLink } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const NavLinks = () => {
+  
+  
   return (
     <div className="flex flex-col items-center space-y-2 md:space-y-0 md:flex-row md:space-x-6">
       <NavLink
@@ -30,7 +32,7 @@ const NavLinks = () => {
         Bookings
       </NavLink>
       <NavLink
-        to="/profile"
+        to='/profile'
         className={({ isActive }) => (isActive ? 'text-green-500' : 'text-gray-700')}
       >
         Profile

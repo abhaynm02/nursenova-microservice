@@ -25,6 +25,7 @@ Api.interceptors.request.use(
     const token = store.getState().auth.token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log("hello")
     }
     return config;
   },
