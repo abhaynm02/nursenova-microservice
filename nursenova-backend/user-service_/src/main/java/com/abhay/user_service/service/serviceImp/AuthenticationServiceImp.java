@@ -2,10 +2,12 @@ package com.abhay.user_service.service.serviceImp;
 
 import com.abhay.user_service.dto.*;
 import com.abhay.user_service.exceptions.customexception.*;
+import com.abhay.user_service.model.ForgetPasswordRequest;
 import com.abhay.user_service.model.Role;
 import com.abhay.user_service.model.UnverifiedUser;
 import com.abhay.user_service.model.User;
 import com.abhay.user_service.otp.OtpUtil;
+import com.abhay.user_service.repository.ForgetPasswordRequestRepository;
 import com.abhay.user_service.repository.UnverifiedUserRepository;
 import com.abhay.user_service.repository.UserRepository;
 import com.abhay.user_service.service.AuthenticationService;
@@ -35,8 +37,9 @@ public class AuthenticationServiceImp implements AuthenticationService {
     private final OtpUtil otpUtil;
     private final UnverifiedUserRepository unverifiedUserRepository;
     private final KafkaTemplate<String, OtpNotification>kafkaTemplate;
+    private final ForgetPasswordRequestRepository forgetPasswordRequestRepository;
 
-    public AuthenticationServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, OtpUtil otpUtil, UnverifiedUserRepository unverifiedUserRepository, KafkaTemplate<String, OtpNotification> kafkaTemplate) {
+    public AuthenticationServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, OtpUtil otpUtil, UnverifiedUserRepository unverifiedUserRepository, KafkaTemplate<String, OtpNotification> kafkaTemplate, ForgetPasswordRequestRepository forgetPasswordRequestRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -44,6 +47,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
         this.otpUtil = otpUtil;
         this.unverifiedUserRepository = unverifiedUserRepository;
         this.kafkaTemplate = kafkaTemplate;
+        this.forgetPasswordRequestRepository = forgetPasswordRequestRepository;
     }
 
     public boolean isEmailExists(String email){
@@ -106,18 +110,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
 
     @Override
     public RegisterResponse registerUnverifiedUser(RegisterRequest user) {
-        //generating otp
-        String otp=otpUtil.generateOtp();
-        //creating json for notification
-        OtpNotification notification = OtpNotification.builder()
-                .email(user.getEmail())
-                .otp(otp).build();
-        //creating message for sending json object as kafka
-        Message<OtpNotification>message = MessageBuilder
-                .withPayload(notification)
-                .setHeader(KafkaHeaders.TOPIC,"otpVerification")
-                .build();
-        kafkaTemplate.send(message);
+        String otp=generateOptAndSendMessage(user.getEmail());
         Optional<UnverifiedUser>existingUser =unverifiedUserRepository.findByEmail(user.getEmail());
         if (existingUser.isPresent()){
             UnverifiedUser unverifiedUser =existingUser.get();
@@ -150,7 +143,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
                          .lastname(user.getLastname())
                          .phone(user.getPhone())
                          .password(user.getPassword())
-                         .role(Role.ADMIN)
+                         .role(Role.USER)
                          .email(user.getEmail())
                          .status(true).build();
                  userRepository.save(verifiedUser);
@@ -162,6 +155,77 @@ public class AuthenticationServiceImp implements AuthenticationService {
         RegisterRequest request =new RegisterRequest();
         request.setEmail(existingUser.get().getEmail());
         registerUnverifiedUser(request);
+    }
+
+    private String generateOptAndSendMessage(String email){
+        //generating otp
+        String otp=otpUtil.generateOtp();
+        //creating json for notification
+        OtpNotification notification = OtpNotification.builder()
+                .email(email)
+                .otp(otp).build();
+        //creating message for sending json object as kafka
+        Message<OtpNotification>message = MessageBuilder
+                .withPayload(notification)
+                .setHeader(KafkaHeaders.TOPIC,"otpVerification")
+                .build();
+        kafkaTemplate.send(message);
+        return otp;
+
+    }
+
+    @Override
+    public void forgotPassword(String email) {
+        User user=userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundExceptions("user not found with given email please check your email"));
+        String otp = generateOptAndSendMessage(user.getEmail());
+        Optional<ForgetPasswordRequest>existingRequestUser = forgetPasswordRequestRepository.findByEmail(user.getEmail());
+
+        if (existingRequestUser.isPresent()){
+            ForgetPasswordRequest setRequest =existingRequestUser.get();
+            setRequest.setOtp(passwordEncoder.encode(otp));
+            setRequest.setOtpExpiration(LocalDateTime.now().plusMinutes(2));
+            forgetPasswordRequestRepository.save(setRequest);
+        }else {
+            ForgetPasswordRequest newRequest = ForgetPasswordRequest.builder().
+            email(user.getEmail())
+                    .otp(passwordEncoder.encode(otp))
+                    .otpExpiration(LocalDateTime.now().plusMinutes(2)).build();
+            forgetPasswordRequestRepository.save(newRequest);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void verifyForgetPasswordOpt(VerificationRequest request) {
+        log.info("in otp verification password:{},{}",request.getOtp(),request.getEmail());
+
+        Optional<ForgetPasswordRequest>request1=forgetPasswordRequestRepository.findByEmail(request.getEmail());
+        if (request1.isEmpty()) {
+            throw new UserNotFoundExceptions("User not found with email: " + request.getEmail());
+        }
+
+        ForgetPasswordRequest validRequest = request1.get();
+        log.info("User details: {}", validRequest);
+
+        if (!passwordEncoder.matches(request.getOtp(), validRequest.getOtp())) {
+            log.info("Invalid OTP");
+            throw new OtpInvalidException("The OTP is incorrect.");
+        }
+
+        if (validRequest.getOtpExpiration().isBefore(LocalDateTime.now())) {
+            log.info("OTP expired");
+            throw new OtpExpireException("The OTP has expired.");
+        }
+        log.info("OTP verified successfully");
+        unverifiedUserRepository.deleteByEmail(validRequest.getEmail());
+
+    }
+
+    @Override
+    public void updatePassword(UpdatePassword request) {
+        User user =userRepository.findByEmail(request.getEmail()).orElseThrow(()->new UserNotFoundExceptions("user not found "));
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
     }
 
 

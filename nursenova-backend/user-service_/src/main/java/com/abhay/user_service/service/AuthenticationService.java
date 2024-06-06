@@ -1,9 +1,6 @@
 package com.abhay.user_service.service;
 
-import com.abhay.user_service.dto.LoginRequest;
-import com.abhay.user_service.dto.LoginResponse;
-import com.abhay.user_service.dto.RegisterRequest;
-import com.abhay.user_service.dto.RegisterResponse;
+import com.abhay.user_service.dto.*;
 import com.abhay.user_service.model.UnverifiedUser;
 
 import java.util.Optional;
@@ -16,4 +13,8 @@ public interface AuthenticationService {
    RegisterResponse registerUnverifiedUser(RegisterRequest user);
    void registerVerifiedUser(UnverifiedUser user);
    void resendOpt(String email);
+   void forgotPassword(String email);
+   void verifyForgetPasswordOpt(VerificationRequest request);
+   void updatePassword(UpdatePassword request);
+
 }

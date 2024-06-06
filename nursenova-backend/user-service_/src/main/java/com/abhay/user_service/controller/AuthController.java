@@ -24,8 +24,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse>register(@RequestBody RegisterRequest request){
         authService.isEmailExists(request.getEmail());
-
-
         return ResponseEntity.ok(authService.registerUnverifiedUser(request));
     }
     @PostMapping("/verify")
@@ -38,9 +36,26 @@ public class AuthController {
         return ResponseEntity.badRequest().build();
     }
     @PostMapping("/resent-otp")
-    public ResponseEntity<String>resendOtp(@RequestBody String email){
-        authService.resendOpt(email);
+    public ResponseEntity<String>resendOtp(@RequestBody ResendOtpRequest request){
+        log.info("hello, in resend otp{}:" ,request.getEmail());
+        authService.resendOpt(request.getEmail());
         return new ResponseEntity<>("otp send successfully ", HttpStatus.CREATED);
+    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String>forgotPassword(@RequestBody ResendOtpRequest request){
+        authService.forgotPassword(request.getEmail());
+        return new ResponseEntity<>("OTP send your registered email",HttpStatus.OK);
+    }
+
+    @PostMapping("/otp-verification/forgot-password")
+    public ResponseEntity<String>otpVerificationForgotPassword(@RequestBody VerificationRequest request){
+        authService.verifyForgetPasswordOpt(request);
+        return new ResponseEntity<>("otp verified successfully ",HttpStatus.OK);
+    }
+    @PostMapping("/password/update")
+    public ResponseEntity<String>passwordUpdate(@RequestBody UpdatePassword updatePassword){
+        authService.updatePassword(updatePassword);
+        return new ResponseEntity<>("password update successfully",HttpStatus.OK);
     }
     @PostMapping("/login")
     public ResponseEntity<LoginResponse>login(@RequestBody LoginRequest request){
