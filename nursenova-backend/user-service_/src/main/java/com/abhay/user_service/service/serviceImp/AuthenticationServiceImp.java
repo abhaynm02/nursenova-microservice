@@ -148,7 +148,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
                          .status(true).build();
                  userRepository.save(verifiedUser);
     }
-
+ //resent opt method
     @Override
     public void resendOpt(String email) {
         Optional<UnverifiedUser>existingUser =unverifiedUserRepository.findByEmail(email);

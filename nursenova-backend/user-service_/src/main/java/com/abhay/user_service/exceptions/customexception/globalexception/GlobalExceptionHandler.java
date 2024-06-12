@@ -30,4 +30,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleDuplicateEmailException(DuplicateEmailException ex ,WebRequest request){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(DuplicateServiceNameException.class)
+    public ResponseEntity<?> handleDuplicateServiceNameException(DuplicateServiceNameException ex ,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(ServiceNotFoundException.class)
+    public ResponseEntity<?> handleServiceNotFoundException(ServiceNotFoundException ex, WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
 }
