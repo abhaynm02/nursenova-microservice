@@ -8,22 +8,23 @@ import Home from '../pages/Home'
 import ForgotPassword from '../component/ForgotPassword'
 import PasswordSubmit from '../component/PasswordSubmit'
 import Profile from '../component/Profile'
+import UserServices from '../component/UserServices'
 
 const UserRoutes = () => {
   return (
     <div>
        <Routes>
-        <Route element={<UserLayout></UserLayout>}>
-          <Route index  element={<Home></Home>}></Route>
-          <Route path='/login' element={<LoginPage></LoginPage>}></Route>
-          <Route path='/sign-up' element={<RegisterPage></RegisterPage>}></Route>
-          <Route path='/otp' element={<OtpPage></OtpPage>}></Route>
-          <Route path='forgot-password' element={<ForgotPassword/>}></Route>
-          <Route path='/password-submit' element={<PasswordSubmit></PasswordSubmit>}></Route>
-          <Route path='/profile' element={<Profile></Profile>}></Route>
-        </Route>
-      
-     </Routes>
+      <Route element={<UserLayout />}>
+        <Route index element={<Home />} />
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/sign-up' element={<RegisterPage />} />
+        <Route path='/otp' element={<OtpPage />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/password-submit' element={<PasswordSubmit />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='/services' element={<UserServices></UserServices>}></Route>
+      </Route>
+    </Routes>
       
     </div>
   )

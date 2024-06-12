@@ -5,7 +5,8 @@ const userRoutes ={
       resendotp:'/auth/resent-otp',
       forgotpassword:'/auth/forgot-password',
       otpVerificationForgotpassword:'/auth/otp-verification/forgot-password',
-      updatePassword:'/auth/password/update'
+      updatePassword:'/auth/password/update',
+      services:'/home/services'
 
 
 

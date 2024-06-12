@@ -8,7 +8,7 @@ const AdminLayout = () => {
     <div className='flex flex-col'>
         <AdminHeader></AdminHeader>
         <Outlet></Outlet>
-        <Footer></Footer>
+        {/* <Footer></Footer> */}
       
     </div>
   )

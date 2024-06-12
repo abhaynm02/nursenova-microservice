@@ -8,7 +8,7 @@ const NavLinks = () => {
   return (
     <div className="flex flex-col items-center space-y-2 md:space-y-0 md:flex-row md:space-x-6">
       <NavLink
-        to="/service"
+        to="/services"
         className={({ isActive }) => (isActive ? 'text-green-500' : 'text-gray-700')}
       >
         Service

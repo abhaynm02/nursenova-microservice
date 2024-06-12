@@ -8,9 +8,9 @@ const AppRoutes = () => {
   return (
     <div>
         <Routes>
-            <Route path='/*' element={<UserRoutes></UserRoutes>}></Route>
-            <Route path='/admin/*' element={<AdminRoutes></AdminRoutes>}></Route>
-            <Route path='/nurse/*' element={<NurseRoutes></NurseRoutes>}></Route>
+            <Route path='/*' element={<UserRoutes/>}></Route>
+            <Route path='/admin/*' element={<AdminRoutes/>}></Route>
+            <Route path='/nurse/*' element={<NurseRoutes/>}></Route>
         </Routes>
 
       

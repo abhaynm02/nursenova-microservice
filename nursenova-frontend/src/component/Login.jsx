@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../api/user";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setRole, setToken,setEmail } from "../redux/AuthSlice";
+import { toast } from "react-toastify";
 
 
 
@@ -10,6 +11,7 @@ const Login = () => {
   const [email, setEmaill] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const[role,setRoleN]=useState("");
   const navigate =useNavigate();
   const dispatch = useDispatch();
 
@@ -27,20 +29,22 @@ const Login = () => {
 
       if(response){
         console.log(response.data)
+        setRoleN(response.data.role);
+        
         dispatch(setEmail(response.data.username));
         dispatch(setRole(response.data.role));
         dispatch(setToken(response.data.token))
         console.log(response.data.role)
-        const role= response.data.role;
-        if (role === "USER") {
-        
-          console.log("hello in admin ");
-          navigate("/");
-        } else if (role === "ADMIN") {
-          console.log("hello in user ");
-          navigate("/admin/");
-          
+        if (role === "ADMIN") {
+          toast.success("Logged in as admin");
+          navigate("/admin/dashboard");
         }
+       
+        if (role === "USER") {
+          toast.success("Logged in as user");
+          navigate("/");
+        } 
+        
 
       }
     }

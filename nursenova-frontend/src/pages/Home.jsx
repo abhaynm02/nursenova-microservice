@@ -8,13 +8,13 @@ const Home = () => {
   const role =useSelector((state)=>state.auth.role);
   const navigate =useNavigate();
 
-  useEffect(() => {
-    if(role ==="ADMIN"){
+  // useEffect(() => {
+  //   if(role ==="ADMIN"){
 
-      navigate('/admin')
-    }
-    toast.success(name);
-  }, [name]);
+  //     navigate('/admin')
+  //   }
+  //   toast.success(name);
+  // }, [name]);
 
   return (
     <div className="pt-16 w-full min-h-screen text-white relative overflow-hidden">

@@ -67,3 +67,13 @@ export const updatePassword =async(data)=>{
         return errorHandle(error);
     }
 }
+
+export const showServices =async()=>{
+    try {
+        const response = await Api.get(userRoutes.services);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}

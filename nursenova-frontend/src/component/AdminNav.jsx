@@ -21,7 +21,7 @@ const NavLinkss = () => {
         Requests
       </NavLink>
       <NavLink
-        to="/about"
+        to="/admin/users"
         className={({ isActive }) => (isActive ? 'text-green-500' : 'text-gray-700 hover:text-gray-900')}
       >
         Users
