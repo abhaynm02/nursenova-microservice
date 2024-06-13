@@ -61,4 +61,14 @@ public class AuthController {
     public ResponseEntity<LoginResponse>login(@RequestBody LoginRequest request){
         return ResponseEntity.ok(authService.authenticate(request));
     }
+
+    @PostMapping("/nurse/register")
+    public ResponseEntity<RegisterResponse>nurseRegistration(@RequestBody RegisterRequest request){
+        authService.isEmailExists(request.getEmail());
+        return ResponseEntity.ok(authService.registerUnverifiedUser(request));
+    }
+    @PostMapping("/nurse/verify")
+    public ResponseEntity<RegisterResponse>nurseOptVerification(@RequestBody VerificationRequest verificationRequest){
+        return  ResponseEntity.ok(authService.nurseOtpVerification(verificationRequest.getOtp(),verificationRequest.getEmail()));
+    }
 }

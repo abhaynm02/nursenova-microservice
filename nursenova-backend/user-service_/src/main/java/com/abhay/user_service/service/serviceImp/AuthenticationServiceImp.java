@@ -85,23 +85,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
     @Override
     @Transactional
     public boolean verifyOtp(String otp, String email) {
-        Optional<UnverifiedUser> userOptional = unverifiedUserRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundExceptions("User not found with email: " + email);
-        }
-
-        UnverifiedUser unverifiedUser = userOptional.get();
-        log.info("User details: {}", unverifiedUser);
-
-        if (!passwordEncoder.matches(otp, unverifiedUser.getOtp())) {
-            log.info("Invalid OTP");
-            throw new OtpInvalidException("The OTP is incorrect.");
-        }
-
-        if (unverifiedUser.getOtpExpiration().isBefore(LocalDateTime.now())) {
-            log.info("OTP expired");
-            throw new OtpExpireException("The OTP has expired.");
-        }
+        UnverifiedUser unverifiedUser=otpVerificationHelper(otp,email);
         log.info("OTP verified successfully");
         registerVerifiedUser(unverifiedUser);
         unverifiedUserRepository.deleteByEmail(unverifiedUser.getEmail());
@@ -226,6 +210,49 @@ public class AuthenticationServiceImp implements AuthenticationService {
         User user =userRepository.findByEmail(request.getEmail()).orElseThrow(()->new UserNotFoundExceptions("user not found "));
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
+    }
+
+    @Override
+    public void nurseRegistration(UnverifiedUser user) {
+        User verifiedUser =User.builder()
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .phone(user.getPhone())
+                .password(user.getPassword())
+                .role(Role.NURSE)
+                .email(user.getEmail())
+                .status(true).build();
+        userRepository.save(verifiedUser);
+    }
+
+    @Override
+    @Transactional
+    public RegisterResponse nurseOtpVerification(String otp, String email) {
+        UnverifiedUser unverifiedUser=  otpVerificationHelper(otp,email);
+        log.info("OTP verified successfully");
+        nurseRegistration(unverifiedUser);
+        unverifiedUserRepository.deleteByEmail(unverifiedUser.getEmail());
+        return new RegisterResponse(unverifiedUser.getEmail());
+    }
+
+    private UnverifiedUser otpVerificationHelper(String otp,String email){
+        Optional<UnverifiedUser> userOptional = unverifiedUserRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundExceptions("User not found with email: " + email);
+        }
+        UnverifiedUser unverifiedUser = userOptional.get();
+        log.warn("User details: {}", unverifiedUser);
+
+        if (!passwordEncoder.matches(otp, unverifiedUser.getOtp())) {
+            log.warn("Invalid OTP");
+            throw new OtpInvalidException("The OTP is incorrect.");
+        }
+
+        if (unverifiedUser.getOtpExpiration().isBefore(LocalDateTime.now())) {
+            log.warn("OTP expired");
+            throw new OtpExpireException("The OTP has expired.");
+        }
+        return unverifiedUser;
     }
 
 

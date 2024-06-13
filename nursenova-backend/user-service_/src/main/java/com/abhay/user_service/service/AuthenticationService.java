@@ -16,5 +16,7 @@ public interface AuthenticationService {
    void forgotPassword(String email);
    void verifyForgetPasswordOpt(VerificationRequest request);
    void updatePassword(UpdatePassword request);
+   void nurseRegistration(UnverifiedUser request);
+   RegisterResponse nurseOtpVerification(String otp,String email);
 
 }
