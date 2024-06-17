@@ -8,9 +8,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
@@ -19,18 +21,20 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        log.info("Configuring security filter chain");
+
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        req->req.requestMatchers("/auth/**")
-                                .permitAll()
-                                .requestMatchers("/nurse/**").hasAnyAuthority("ROLE_NURSE")
-                                .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
-                                .requestMatchers("/user/**").hasAnyAuthority("USER")
-                                .anyRequest().authenticated()
-                ).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).build();
+                .authorizeHttpRequests(req -> {
+                    req.requestMatchers("/register/**").permitAll()
+                            .requestMatchers("/nurse/**").hasAnyAuthority("ROLE_NURSE","ROLE_ADMIN")
+                            .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
+                            .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER")
+                            .anyRequest().authenticated();
+                })
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 }

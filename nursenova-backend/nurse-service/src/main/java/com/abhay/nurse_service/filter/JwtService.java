@@ -6,7 +6,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -39,6 +38,18 @@ public class JwtService {
                 .map(role -> new SimpleGrantedAuthority(role))
                 .collect(Collectors.toList());
     }
+//public List<String> extractRoles(String token) {
+//    Object rolesObject = extractClaim(token, claims -> claims.get("role"));
+//    List<String> roles;
+//    if (rolesObject instanceof String) {
+//        roles = List.of((String) rolesObject);
+//    } else if (rolesObject instanceof List) {
+//        roles = (List<String>) rolesObject;
+//    } else {
+//        throw new IllegalArgumentException("Invalid role claim in JWT token");
+//    }
+//    return roles ;
+//}
 
     public <T> T extractClaim(String token, Function<Claims,T>resolver){
         Claims claims =extractAllClaims(token);

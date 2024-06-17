@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Component
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
@@ -32,25 +33,32 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-
         String authHeader = request.getHeader("Authorization");
-        if (authHeader == null ||!authHeader.startsWith("Bearer")){
-            filterChain.doFilter(request,response);
-            return;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.info("No JWT token found in request header for URI: {}", request.getRequestURI());
+            filterChain.doFilter(request, response);
+            return ;
         }
-        String token =authHeader.substring(7);
-        String username = jwtService.extractUsername(token);
 
-        List<SimpleGrantedAuthority> roles =jwtService.extractRoles(token);
+        try {
+            String token = authHeader.substring(7);
+            String username = jwtService.extractUsername(token);
+            log.info("Extracted username from token: {}", username);
+            List<SimpleGrantedAuthority> roles = jwtService.extractRoles(token);
+            Collection<GrantedAuthority> authorities = roles.stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(Collectors.toList());
 
-        Collection<GrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .collect(Collectors.toList());
+            log.info("Authorities: {}", authorities);
 
-     log.info("roles: {}",authorities);
-        UserDetails userDetails =new User(username,"",authorities);
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserDetails userDetails = new User(username, "", authorities);
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (Exception e) {
+            log.error("JWT token processing failed", e);
+        }
+
         filterChain.doFilter(request, response);
     }
 }
