@@ -123,7 +123,7 @@ public class RegisterServiceImp implements RegisterService {
     }
 
     @Override
-    public List<RequestApproveDto> findAllRequests() {
+    public List<RequestApproveDto>findAllRequests() {
 
       return nurseRepository.findByIsVerified(false).stream().map(nurse ->new RequestApproveDto(
               nurse.getId(),

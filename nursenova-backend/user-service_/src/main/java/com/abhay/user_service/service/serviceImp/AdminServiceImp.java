@@ -40,4 +40,13 @@ public class AdminServiceImp implements AdminService {
     public void blockUser(long id, boolean status) {
         userRepository.updateStatus(id,status);
     }
+
+    @Override
+    public void blockNurse(String userName, boolean status) {
+        Optional<User>optionalUser=userRepository.findByEmail(userName);
+        if (optionalUser.isPresent()){
+            long userId=optionalUser.get().getId();
+            userRepository.updateStatus(userId,status);
+        }
+    }
 }

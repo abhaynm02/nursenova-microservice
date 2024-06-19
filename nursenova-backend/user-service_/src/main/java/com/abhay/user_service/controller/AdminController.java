@@ -65,5 +65,9 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
+  @PostMapping("/nurse/block")
+    public ResponseEntity<String>blockOrUnblockNurse(@RequestBody AllUserResponse allUserResponse){
+        adminServiceImp.blockNurse(allUserResponse.getUsername(),allUserResponse.isStatus());
+        return new ResponseEntity<>("nurse blocked successfully",HttpStatus.OK);
+  }
 }

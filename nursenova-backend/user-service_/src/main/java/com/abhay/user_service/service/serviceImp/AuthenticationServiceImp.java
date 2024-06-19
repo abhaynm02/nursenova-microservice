@@ -232,7 +232,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
         log.info("OTP verified successfully");
         nurseRegistration(unverifiedUser);
         unverifiedUserRepository.deleteByEmail(unverifiedUser.getEmail());
-        return new RegisterResponse(unverifiedUser.getEmail());
+        return new RegisterResponse(unverifiedUser.getEmail(), unverifiedUser.getFirstname(), unverifiedUser.getLastname());
     }
 
     private UnverifiedUser otpVerificationHelper(String otp,String email){

@@ -1,11 +1,7 @@
 package com.abhay.nurse_service.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -32,11 +28,17 @@ public class Nurse {
     private String certificateImageLink;
     private String address;
     private String pin;
+
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nurseId", fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Language> languages;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "nurse", fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<NurseService> nurseServices;
 
     private boolean isVerified;
 }
