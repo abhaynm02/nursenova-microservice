@@ -17,10 +17,10 @@ public class CorsConfig   {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-        config.setAllowedMethods(Collections.singletonList("*"));
-        config.setAllowCredentials(true);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setExposedHeaders(List.of("Authorization"));
+        config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

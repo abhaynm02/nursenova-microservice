@@ -5,6 +5,8 @@ import com.abhay.user_service.model.Role;
 import com.abhay.user_service.model.User;
 import com.abhay.user_service.repository.UserRepository;
 import com.abhay.user_service.service.AdminService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +23,15 @@ public class AdminServiceImp implements AdminService {
     }
 
     @Override
-    public List<AllUserResponse> findAllUsers() {
+    public Page<AllUserResponse> findAllUsers(Pageable pageable) {
 
-        Optional<List<User>>users=userRepository.findByRole(Role.USER);
-        List<User> userList=users.get();
-
-        return userList.stream().map(user->{
+       Page<User> users=userRepository.findByRole(pageable,Role.USER);
+        return users.map(user->{
             return  new AllUserResponse(user.getId(),
                     user.getFirstname(),
                     user.getEmail(),
                     user.isStatus());
-        }).toList();
+        });
     }
 
 
@@ -42,11 +42,25 @@ public class AdminServiceImp implements AdminService {
     }
 
     @Override
-    public void blockNurse(String userName, boolean status) {
+    @Transactional
+    public boolean blockNurse(String userName, boolean status) {
         Optional<User>optionalUser=userRepository.findByEmail(userName);
         if (optionalUser.isPresent()){
             long userId=optionalUser.get().getId();
             userRepository.updateStatus(userId,status);
+            return true;
         }
+        return false;
+    }
+
+    @Override
+    public Page<AllUserResponse> searchUsers(Pageable pageable, String searchKey) {
+        Page<User>users=userRepository.searchUsers(pageable, searchKey,Role.USER);
+        return users.map(user->{
+            return  new AllUserResponse(user.getId(),
+                    user.getFirstname(),
+                    user.getEmail(),
+                    user.isStatus());
+        });
     }
 }

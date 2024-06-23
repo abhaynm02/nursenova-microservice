@@ -5,6 +5,9 @@ import com.abhay.nurse_service.dto.RequestApproveDto;
 import com.abhay.nurse_service.dto.VerificationDto;
 import com.abhay.nurse_service.service.serviceImp.AdminServiceImp;
 import com.abhay.nurse_service.service.serviceImp.RegisterServiceImp;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,8 +29,10 @@ public class AdminController {
 
     @GetMapping("/verification/requests")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<RequestApproveDto>> findVerificationRequest(){
-        return new ResponseEntity<>(registerServiceImp.findAllRequests(), HttpStatus.OK);
+    public ResponseEntity<Page<RequestApproveDto>> findVerificationRequest(@RequestParam(defaultValue = "0")int page
+            ,@RequestParam(defaultValue = "10")int size){
+        Pageable pageable= PageRequest.of(page,size);
+        return new ResponseEntity<>(registerServiceImp.findAllRequests(pageable), HttpStatus.OK);
     }
     @PostMapping("/verify/request")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -43,8 +48,14 @@ public class AdminController {
     }
     @GetMapping("/find/all/staffs")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<RequestApproveDto>>findAllStaffs(){
-        return new ResponseEntity<>(adminServiceImp.findAllStaffs(),HttpStatus.OK);
+    public ResponseEntity<Page<RequestApproveDto>>findAllStaffs(@RequestParam(defaultValue = "0")int page,
+                                                                @RequestParam(defaultValue ="10")int size,
+                                                                @RequestParam(defaultValue = "")String searchKey){
+        Pageable pageable= PageRequest.of(page,size);
+        if (!searchKey.isEmpty()){
+            return new ResponseEntity<>(adminServiceImp.searchStaffs(pageable,searchKey),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(adminServiceImp.findAllStaffs(pageable),HttpStatus.OK);
     }
     @PostMapping("/block/nurse")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

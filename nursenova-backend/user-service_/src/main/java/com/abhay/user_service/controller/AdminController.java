@@ -3,8 +3,13 @@ package com.abhay.user_service.controller;
 import com.abhay.user_service.dto.AllUserResponse;
 import com.abhay.user_service.dto.ServiceAddRequest;
 import com.abhay.user_service.dto.ServiceResponse;
+import com.abhay.user_service.dto.UserBlockRequestDto;
 import com.abhay.user_service.service.serviceImp.AdminServiceImp;
 import com.abhay.user_service.service.serviceImp.ServicesImp;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +35,24 @@ public class AdminController {
     }
 
     @GetMapping("/services")
-    public ResponseEntity<List<ServiceResponse>> findAllServices() {
-        return new ResponseEntity<>(servicesImp.findAllServices(), HttpStatus.OK);
+    public ResponseEntity<Page<ServiceResponse>> findAllServices(@RequestParam(defaultValue = "0")int page,
+                                                                 @RequestParam(defaultValue = "5")int size,
+                                                                 @RequestParam(defaultValue ="") String searchKey,
+                                                                 @RequestParam(defaultValue = "")String key) {
+
+        Pageable pageable = null;
+        if(key.equals("asc")){
+             pageable=PageRequest.of(page,size, Sort.by("basePrice").ascending());
+
+        }else if (key.equals("des")){
+            pageable=PageRequest.of(page,size,Sort.by("basePrice").descending());
+        }else {
+            pageable=PageRequest.of(page,size);
+        }
+        if (!searchKey.isEmpty()){
+            return new ResponseEntity<>(servicesImp.searchServices(pageable,searchKey),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(servicesImp.findAllServices(pageable), HttpStatus.OK);
     }
 
     @GetMapping("/service/{service-id}")
@@ -55,8 +76,15 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/all-users")
-    public ResponseEntity<List<AllUserResponse>>findAllUsers(){
-        return new ResponseEntity<>(adminServiceImp.findAllUsers(),HttpStatus.OK) ;
+    public ResponseEntity<Page<AllUserResponse>>findAllUsers(@RequestParam(defaultValue = "0")int page,
+                                                             @RequestParam(defaultValue = "5")int size,
+                                                             @RequestParam(defaultValue = "")String searchKey){
+        Pageable pageable= PageRequest.of(page, size);
+        if (!searchKey.isEmpty()){
+            return new ResponseEntity<>(adminServiceImp.searchUsers(pageable,searchKey),HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(adminServiceImp.findAllUsers(pageable),HttpStatus.OK) ;
     }
 
     @PostMapping("/user/block")
@@ -66,8 +94,8 @@ public class AdminController {
     }
 
   @PostMapping("/nurse/block")
-    public ResponseEntity<String>blockOrUnblockNurse(@RequestBody AllUserResponse allUserResponse){
-        adminServiceImp.blockNurse(allUserResponse.getUsername(),allUserResponse.isStatus());
-        return new ResponseEntity<>("nurse blocked successfully",HttpStatus.OK);
+    public ResponseEntity<Boolean>blockOrUnblockNurse(@RequestBody UserBlockRequestDto allUserResponse){
+
+        return new ResponseEntity<>(adminServiceImp.blockNurse(allUserResponse.getUsername(),allUserResponse.isStatus()),HttpStatus.OK);
   }
 }

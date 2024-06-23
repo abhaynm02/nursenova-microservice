@@ -7,6 +7,8 @@ import com.abhay.user_service.exceptions.customexception.ServiceNotFoundExceptio
 import com.abhay.user_service.model.Services;
 import com.abhay.user_service.repository.ServicesRepository;
 import com.abhay.user_service.service.ServicesService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,15 +64,26 @@ public class ServicesImp implements ServicesService {
     }
 
     @Override
-    public List<ServiceResponse> findAllServices() {
-        List<Services>services =servicesRepository.findAll();
-       return  services.stream().map(service->{
+    public Page<ServiceResponse> findAllServices(Pageable pageable) {
+        Page<Services>services =servicesRepository.findAll(pageable);
+       return  services.map(service->{
           return new ServiceResponse(service.getId(),
                   service.getServiceName(),
                   service.getDescription(),service.getBasePrice(),
                   service.isStatus());
-       }).toList();
+       });
 
+    }
+
+    @Override
+    public Page<ServiceResponse> searchServices(Pageable pageable, String searchKey) {
+        Page<Services>services=servicesRepository.searchServices(pageable, searchKey);
+        return  services.map(service->{
+            return new ServiceResponse(service.getId(),
+                    service.getServiceName(),
+                    service.getDescription(),service.getBasePrice(),
+                    service.isStatus());
+        });
     }
 
     @Override

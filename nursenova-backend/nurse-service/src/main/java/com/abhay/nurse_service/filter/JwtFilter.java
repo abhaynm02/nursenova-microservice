@@ -53,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = new User(username, "", authorities);
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
             log.error("JWT token processing failed", e);

@@ -14,6 +14,8 @@ import com.abhay.nurse_service.repository.LanguageRepository;
 import com.abhay.nurse_service.repository.NurseRepository;
 import com.abhay.nurse_service.service.RegisterService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,6 +89,7 @@ public class RegisterServiceImp implements RegisterService {
         nurse.setFirstName(request.getFirstName());
         nurse.setLastName(request.getLastName());
         nurse.setVerified(false);
+        nurse.setStatus(false);
         nurse.setPhone(request.getPhone());
         nurse.setPin(request.getPin());
 
@@ -122,18 +125,21 @@ public class RegisterServiceImp implements RegisterService {
         }
     }
 
+    //finding all new job request  based on isVerified if any doubt just look line number 177
     @Override
-    public List<RequestApproveDto>findAllRequests() {
+    public Page<RequestApproveDto> findAllRequests(Pageable pageable) {
 
-      return nurseRepository.findByIsVerified(false).stream().map(nurse ->new RequestApproveDto(
-              nurse.getId(),
-              nurse.getFirstName(),
-              nurse.getLastName(),
-              nurse.getUserName(),
-              String.valueOf(nurse.getGender()),
-              nurse.getPhone(),
-              nurse.isVerified()
-      )).toList();
+        Page<Nurse> nursePage = nurseRepository.findByIsVerified(pageable, false);
+        log.info("pages:{}",nursePage.toString());
+        return nursePage.map(nurse -> new RequestApproveDto(
+                nurse.getId(),
+                nurse.getFirstName(),
+                nurse.getLastName(),
+                nurse.getUserName(),
+                String.valueOf(nurse.getGender()),
+                nurse.getPhone(),
+                nurse.isStatus()
+        ));
     }
 
     @Override
@@ -168,7 +174,12 @@ public class RegisterServiceImp implements RegisterService {
     @Transactional
     @Override
     public void approveRequest(long nurseId, boolean status) {
+        //updating the nurse request status and block status the
+        // block status is for listing the nurse in user side both are same isVerified is used to verification purpose
+        // and listing the request's admin side we cant use the isVerified for dual purpose it make a bug in request
+        // approving time after block it will present in request side
             nurseRepository.verifyRequest(nurseId,status);
+            nurseRepository.blockNurse(nurseId,status);
     }
 
 

@@ -41,4 +41,5 @@ public class Nurse {
     private List<NurseService> nurseServices;
 
     private boolean isVerified;
+    private boolean status;
 }
