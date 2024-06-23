@@ -2,6 +2,8 @@ import React, { useState,useEffect } from 'react';
 import Modal from './Modal';
 import{allServices,addService,findServiceById, editService, blockOrUnblockService } from '../api/admin'
 import { toast } from 'react-toastify';
+import { ArrowDown, ArrowUp, ArrowUpDown, PlusIcon, Search } from 'lucide-react';
+import PageNavigationBar from './PageNavigationBar';
 
 
 
@@ -15,11 +17,18 @@ const AdminServices = () => {
   const [edit,setEdit]=useState(false);
   const [serviceId,setServiceId]=useState();
   const [dataFeatch,setDataFeatch]=useState(false);
+ const [currentPage, setCurrentPage] = useState(1);
+ const [totalPages, setTotalPages] = useState(0);
+ const [pageSize, setPageSize] = useState(8);
+ const[searchKey,setSearchKey]=useState('');
+ const [priceFilter, setPriceFilter] = useState('');
+ const [sort, setSort] = useState({ key: '' });
   useEffect(()=>{
     const fetchServices = async () => {
       try {
-        const response = await allServices();
-        setServices(response.data);
+        const response = await allServices(currentPage - 1, pageSize,searchKey,sort.key);
+        setServices(response.data.content);
+        setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error("Error fetching services:", error);
       }
@@ -27,7 +36,10 @@ const AdminServices = () => {
 
     fetchServices();
    
-  },[dataFeatch])
+  },[currentPage, pageSize,dataFeatch,searchKey,sort])
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
 
   const validateForm = () => {
@@ -119,7 +131,10 @@ const AdminServices = () => {
    setDescription('');
 
   }
-
+ 
+  const search = (e)=>{
+    setSearchKey(e.target.value)
+  }
   const blockService =async(id,status)=>{
        try {
         const data={
@@ -134,24 +149,53 @@ const AdminServices = () => {
        }
   }
 
+
+  const handleSort = () => {
+    setSort(prevSort => ({
+      key: prevSort.key === 'asc' ? 'des' : prevSort.key === 'des' ? '' : 'asc'
+    }));
+  };
+  
   return (
     <div className="container mx-auto px-4 py-8">
     <h1 className="text-center font-bold text-3xl md:text-4xl mb-8">Services</h1>
-    <div className="mb-4">
-      <button
-        onClick={() => setShowModal(true)}
-        className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-300"
-      >
-        Add Service
-      </button>
+    <div className=" flex gap-2 w-full justify-between mb-4">
+  <button
+    onClick={() => setShowModal(true)}
+    className="bg-green-400 hover:bg-green-500 text-white font-semibold py-1 px-4 rounded-md shadow-md transition duration-300"
+  >
+    Add Service
+  </button>
+  <div className="flex gap-2">
+    <div className="relative max-w-md w-full">
+      <input
+        type="text"
+        className="uppercase w-full border bg-gray-100 rounded-md px-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all"
+        placeholder="Search..."
+        value={searchKey}
+        onChange={search}
+      />
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
     </div>
+  
+  </div>
+</div>
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
         <thead>
           <tr className="bg-gray-100 border-b">
             <th className="p-3 text-left text-sm font-semibold tracking-wide">Name</th>
             <th className="p-3 text-left text-sm font-semibold tracking-wide">Description</th>
-            <th className="p-3 text-left text-sm font-semibold tracking-wide">Base Price</th>
+            <th className="p-3 text-left text-sm font-semibold tracking-wide">
+            <div className="flex items-center cursor-pointer" onClick={handleSort}>
+              Base Price
+              <span className="ml-2">
+                {sort.key === 'asc' ? <ArrowUp size={16} /> : 
+                 sort.key === 'des' ? <ArrowDown size={16} /> : 
+                 <ArrowUpDown size={16} />}
+              </span>
+            </div>
+          </th>
             <th className="p-3 text-center text-sm font-semibold tracking-wide">Actions</th>
           </tr>
         </thead>
@@ -168,7 +212,7 @@ const AdminServices = () => {
                 <div className="flex justify-center space-x-2">
                   <button
                     onClick={() => handleEdit(service.id)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-md shadow-md transition duration-300"
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-md shadow-md transition duration-300"
                   >
                     Edit
                   </button>
@@ -178,7 +222,7 @@ const AdminServices = () => {
                       service.status
                         ? 'bg-green-500 hover:bg-green-600'
                         : 'bg-red-500 hover:bg-red-600'
-                    } text-white px-3 py-2 rounded-md shadow-md transition duration-300`}
+                    } text-white px-4 py-1 rounded-md shadow-md transition duration-300`}
                   >
                     {service.status ? 'Block' : 'Unblock'}
                   </button>
@@ -189,6 +233,7 @@ const AdminServices = () => {
         </tbody>
       </table>
     </div>
+    <PageNavigationBar currentPage={currentPage} totalPages={totalPages} handlePageChange={handlePageChange}/>
       <Modal isVisible={showModal} onClose={() => {handleClose()
 
       }}>

@@ -9,20 +9,24 @@ import ForgotPassword from '../component/ForgotPassword'
 import PasswordSubmit from '../component/PasswordSubmit'
 import Profile from '../component/Profile'
 import UserServices from '../component/UserServices'
+import WorkWithUs from '../component/WorkWithUs'
+import UserProfileLayout from '../layout/UserProfileLayout'
+import UserProfileRoutes from './UserProfileRoutes'
 
 const UserRoutes = () => {
   return (
     <div>
        <Routes>
-      <Route element={<UserLayout />}>
+        <Route element={<UserLayout />}>
         <Route index element={<Home />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/sign-up' element={<RegisterPage />} />
         <Route path='/otp' element={<OtpPage />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/password-submit' element={<PasswordSubmit />} />
-        <Route path='/profile' element={<Profile />} />
+        <Route path='/profile/*' element={<UserProfileRoutes></UserProfileRoutes>} />
         <Route path='/services' element={<UserServices></UserServices>}></Route>
+        <Route path='/work-withus' element={<WorkWithUs></WorkWithUs>}></Route>
       </Route>
     </Routes>
       

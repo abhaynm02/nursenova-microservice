@@ -15,7 +15,7 @@ const NavLinkss = () => {
         Services
       </NavLink>
       <NavLink
-        to="/work-withus"
+        to="/admin/nurse/requests"
         className={({ isActive }) => (isActive ? 'text-green-500' : 'text-gray-700 hover:text-gray-900')}
       >
         Requests
@@ -27,7 +27,7 @@ const NavLinkss = () => {
         Users
       </NavLink>
       <NavLink
-        to="/bookings"
+        to="/admin/staffs"
         className={({ isActive }) => (isActive ? 'text-green-500' : 'text-gray-700 hover:text-gray-900')}
       >
         Staffs

@@ -44,6 +44,10 @@ const Login = () => {
           toast.success("Logged in as user");
           navigate("/");
         } 
+        if(role =="NURSE"){
+          toast.success("Logged in as nurse")
+          navigate("/nurse/home")
+        }
         
 
       }
