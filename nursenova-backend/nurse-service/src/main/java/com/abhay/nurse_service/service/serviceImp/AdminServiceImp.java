@@ -3,11 +3,14 @@ package com.abhay.nurse_service.service.serviceImp;
 import com.abhay.nurse_service.dto.RequestApproveDto;
 import com.abhay.nurse_service.dto.UserBlockRequestDto;
 import com.abhay.nurse_service.exceptions.customexceptions.DuplicateUsernameException;
+import com.abhay.nurse_service.exceptions.customexceptions.InternalServiceDownException;
 import com.abhay.nurse_service.feignclient.UserClient;
 import com.abhay.nurse_service.model.Nurse;
 import com.abhay.nurse_service.repository.NurseRepository;
 import com.abhay.nurse_service.service.AdminService;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +48,8 @@ public class AdminServiceImp implements AdminService {
 
     @Override
     @Transactional
+    @CircuitBreaker(name = "userServiceCircuitBreaker",fallbackMethod = "fallbackMethod")
+    @Retry(name = "userServiceRetry",fallbackMethod = "fallbackMethod")
     public boolean blockOrUnblock(long nurseId, boolean status) {
         Optional<Nurse> nurseOptional = nurseRepository.findById(nurseId);
         if (nurseOptional.isPresent()) {
@@ -61,6 +66,10 @@ public class AdminServiceImp implements AdminService {
         } else {
             throw new DuplicateUsernameException("Nurse not found with ID: " + nurseId);
         }
+    }
+    public boolean fallbackMethod(long nurseId, boolean status, Exception ex) {
+        log.error("Circuit breaker fallback: Failed to block/unblock nurse. NurseId: {}, Status: {}", nurseId, status, ex);
+        throw new InternalServiceDownException("Internal service is down please try again ");
     }
 
     @Override

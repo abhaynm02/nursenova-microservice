@@ -38,4 +38,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleServiceNotFoundException(ServiceNotFoundException ex, WebRequest request){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<?>handleIncorrectPasswordException(IncorrectPasswordException ex,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(InternalServiceDownException.class)
+    public ResponseEntity<?>handleInternalServiceDownException(IncorrectPasswordException ex ,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

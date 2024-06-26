@@ -1,5 +1,6 @@
 package com.abhay.nurse_service.service.serviceImp;
 
+import com.abhay.nurse_service.dto.ProfileDto;
 import com.abhay.nurse_service.dto.ServiceAddRequest;
 import com.abhay.nurse_service.model.DutyType;
 import com.abhay.nurse_service.model.Nurse;
@@ -61,4 +62,8 @@ public class NurseServiceImp implements NurseServiceI {
             nurseRepository.save(nurse);
         }
     }
+
+
+
+
 }
