@@ -17,6 +17,7 @@ const Login = () => {
 
 
   const handleSubmit = async(e) => {
+    console.log("clicked")
     e.preventDefault();
     if (validate()) {
       console.log({ email, password });
@@ -26,15 +27,17 @@ const Login = () => {
         password:password
       }
       const response =await login(data);
+      console.log(response);
 
       if(response){
-        console.log(response.data)
+        console.log(response.data,"this is response")
         setRoleN(response.data.role);
         
         dispatch(setEmail(response.data.username));
         dispatch(setRole(response.data.role));
         dispatch(setToken(response.data.token))
         console.log(response.data.role)
+        
         if (role === "ADMIN") {
           toast.success("Logged in as admin");
           navigate("/admin/dashboard");
@@ -54,6 +57,7 @@ const Login = () => {
     }
       
   };
+  
 
   const validate = () => {
     const newErrors = {};

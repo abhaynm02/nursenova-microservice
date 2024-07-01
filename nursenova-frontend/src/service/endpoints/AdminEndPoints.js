@@ -11,6 +11,7 @@ const adminRoutes ={
     verifyrequest:'/nurse/admin/verify/request',
     findAllStaffs:'/nurse/admin/find/all/staffs',
     blocknurse:'/nurse/admin/block/nurse',
+   
 
 }
 

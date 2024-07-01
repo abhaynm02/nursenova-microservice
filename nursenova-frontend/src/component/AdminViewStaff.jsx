@@ -89,7 +89,7 @@ const AdminViewStaff = () => {
       <div className="bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 flex flex-col justify-between">
         <div>
           <h3 className="text-lg font-bold mb-2">Verification</h3>
-          <p>Verified: {nurseData.isVerified ? 'Yes' : 'No'}</p>
+          <p>Verified: {nurseData.verified ? 'Yes' : 'No'}</p>
         </div>
         {nurseData.certificateImageLink && (
           <img 

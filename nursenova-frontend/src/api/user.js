@@ -1,4 +1,5 @@
 
+import { data } from "autoprefixer";
 import Api from "../service/axios";
 import userRoutes from "../service/endpoints/UserEndPoints";
 import errorHandle from "./error";
@@ -73,6 +74,35 @@ export const showServices =async()=>{
         const response = await Api.get(userRoutes.services);
         return response;
         
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const getProfile =async(username)=>{
+    try {
+        const response=await Api.get(`${userRoutes.profile}/${username}`);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const updateProfile =async(data)=>{
+    try {
+        const response=await Api.post(userRoutes.updateProfile,data);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+        
+    }
+}
+export const changePassword =async(data)=>{
+    try {
+        const response =await Api.post(userRoutes.changePassword,data);
+        return response;
     } catch (error) {
         return errorHandle(error);
     }

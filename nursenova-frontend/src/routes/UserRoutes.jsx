@@ -12,6 +12,7 @@ import UserServices from '../component/UserServices'
 import WorkWithUs from '../component/WorkWithUs'
 import UserProfileLayout from '../layout/UserProfileLayout'
 import UserProfileRoutes from './UserProfileRoutes'
+import UserProtected from '../component/Protected/UserProtected'
 
 const UserRoutes = () => {
   return (
@@ -24,9 +25,11 @@ const UserRoutes = () => {
         <Route path='/otp' element={<OtpPage />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/password-submit' element={<PasswordSubmit />} />
-        <Route path='/profile/*' element={<UserProfileRoutes></UserProfileRoutes>} />
         <Route path='/services' element={<UserServices></UserServices>}></Route>
         <Route path='/work-withus' element={<WorkWithUs></WorkWithUs>}></Route>
+        <Route element={<UserProtected></UserProtected>}>
+        <Route path='/profile/*' element={<UserProfileRoutes></UserProfileRoutes>} />
+        </Route>
       </Route>
     </Routes>
       

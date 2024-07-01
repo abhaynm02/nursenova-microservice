@@ -38,3 +38,59 @@ export const verifyOtp =async(data)=>{
         return errorHandle(error)
     }
 }
+export const getProfile=async(username)=>{
+    try {
+        const response =await Api.get(`${nurseRoutes.getProfile}/${username}`);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+export const updateProfile=async(data)=>{
+    try {
+        const response=await Api.post(nurseRoutes.updateProfile,data);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const getNurseDetails=async(usernae)=>{
+    try {
+       const response=await Api.get(`${nurseRoutes.getNurseDetails}/${usernae}`);
+       return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const showServices =async()=>{
+    try {
+        const response =await Api.get(nurseRoutes.showServices);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const addService =async(data)=>{
+    try {
+        const response =await Api.post(nurseRoutes.addService,data);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const fetchServices =async(username,page,size,searchKey)=>{
+    try {
+         const response =await Api.get(`${nurseRoutes.fetchServices}?username=${username}&page=${page}&size=${size}&searchKey=${searchKey}`);
+         return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}

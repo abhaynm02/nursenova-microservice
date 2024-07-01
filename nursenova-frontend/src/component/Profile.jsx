@@ -1,15 +1,56 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux';
+import { getProfile, updateProfile } from '../api/user';
+
 
 const Profile = () => {
-  const [name, setName] = useState('Abhay n m');
-  const [userName, setUserName] = useState('abhaynm@gmail.com');
-  const [phone, setPhone] = useState('235646461');
+  const [name, setName] = useState('');
+  const [userName, setUserName] = useState('');
+  const [phone, setPhone] = useState('');
+  const[lastname,setLastname]=useState('');
   const [isEdit, setIsEdit] = useState(false);
   const[errors,setErrors]=useState({});
+ 
+  
 
-  const handleSubmit = (e) => {
+  const username = useSelector((state) => state.auth.email);
+  useEffect(() => {
+    const fetchData = async (username) => {
+      try {
+        const response = await getProfile(username);
+        console.log(response);
+        setName(response.data.firstname);
+        setLastname(response.data.lastname);
+        setPhone(response.data.phone);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    if (username) {
+      setUserName(username);
+      fetchData(username);
+    }
+  }, [username,isEdit]);
+
+  const handleSubmit =async (e) => {
     e.preventDefault();
+    const data={
+      firstname:name,
+      lastname:lastname,
+      username:userName,
+      phone:phone,
+    }
     if(validate()){
+      try {
+        const response=await updateProfile(data)
+        setIsEdit(false);
+        
+      } catch (error) {
+
+        
+      }
+
       setIsEdit(false);
 
     }
@@ -21,14 +62,13 @@ const Profile = () => {
 
   const handleCancel = () => {
     setIsEdit(false);
-    // Reset to original values if needed
-    // setName('Abhay n m');
-    // setPhone('235646461');
+  
   }
   const validate=()=>{
 
     const newErrors = {};
     if (!name.trim()) newErrors.name = 'Firstname is required';
+    if (!lastname.trim()) newErrors.lastname = 'lastname is required';
     if (!phone.trim()) newErrors.phone = 'Phone number is required';
     else if (!/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/.test(phone)) newErrors.phone = 'Phone number is invalid';
     setErrors(newErrors);
@@ -41,7 +81,7 @@ const Profile = () => {
         <h2 className="uppercase tracking-wide text-lg text-indigo-500 font-semibold mb-4">Profile</h2>
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
-            <label htmlFor="name" className='text-slate-500 font-bold block mb-1'>Name:</label>
+            <label htmlFor="name" className='text-slate-500 font-bold block mb-1'>FirstName:</label>
             <input 
               type="text"
               value={name}
@@ -51,6 +91,18 @@ const Profile = () => {
               readOnly={!isEdit}
             />
               {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+          </div>
+          <div className="mt-4">
+            <label htmlFor="lastname" className='text-slate-500 font-bold block mb-1'>LastName:</label>
+            <input 
+              type="text"
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
+              placeholder='lastname'
+              className='w-full bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-400 rounded p-2'
+              readOnly={!isEdit}
+            />
+              {errors.lastname && <p className="text-red-500 text-sm mt-1">{errors.lastname}</p>}
           </div>
           <div className="mt-4">
             <label htmlFor="userName" className='text-slate-500 font-bold block mb-1'>Username:</label>

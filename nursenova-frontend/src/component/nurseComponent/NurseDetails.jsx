@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux';
+import { getNurseDetails } from '../../api/nurse';
 
 const NurseDetails = () => {
     const [nurseData, setNurseData] = useState({
@@ -18,14 +20,26 @@ const NurseDetails = () => {
         profileImageLink: "https://via.placeholder.com/150",
         certificateImageLink: "https://via.placeholder.com/300x200?text=Nursing+Certificate"
     });
+    const username = useSelector((state) => state.auth.email);
 
     useEffect(() => {
-        // This is where you would normally fetch the data from an API
-        // For now, we're using the dummy data set in the initial state
-    }, []);
+        const fetchData=async(username)=>{
+            try {
+                const response=await getNurseDetails(username);
+                console.log(response)
+                setNurseData(response.data)
+            } catch (error) {
+                console.log(error);
+            }
+
+        }
+        if(username){
+            fetchData(username);
+        }
+    }, [username]);
 
     return (
-        <div className="max-w-md mx-auto mt-10 bg-gray-300 rounded-xl shadow-md overflow-hidden md:max-w-2xl px-4 md:px-0 ">
+        <div className="max-w-md mx-auto mt-10 bg-gray-300 rounded-xl shadow-md overflow-hidden md:max-w-screen-2xl px-4 md:px-0 ">
             <div className="p-8 ">
                 <h2 className="uppercase tracking-wide text-lg text-indigo-500 font-semibold mb-4">Details</h2>
                 
@@ -67,7 +81,8 @@ const NurseDetails = () => {
                     <div className="bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 flex flex-col justify-between">
                         <div>
                             <h3 className="text-lg font-bold mb-2">Verification</h3>
-                            <p>Verified: {nurseData.isVerified ? 'Yes' : 'No'}</p>
+                            <p>Verified: {nurseData.verified
+ ? 'Yes' : 'No'}</p>
                         </div>
                         {nurseData.certificateImageLink && (
                             <img 
