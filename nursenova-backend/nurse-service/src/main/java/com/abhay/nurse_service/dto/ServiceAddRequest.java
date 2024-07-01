@@ -1,5 +1,6 @@
 package com.abhay.nurse_service.dto;
 
+import com.abhay.nurse_service.model.Duty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,4 +18,13 @@ public class ServiceAddRequest {
     private  long serviceId;
     private Map<String,Long>dutyType;
 
+    @Override
+    public String toString() {
+        return "ServiceAddRequest{" +
+                "nurseId='" + nurseId + '\'' +
+                ", serviceName='" + serviceName + '\'' +
+                ", serviceId=" + serviceId +
+                ", dutyType=" + dutyType +
+                '}';
+    }
 }

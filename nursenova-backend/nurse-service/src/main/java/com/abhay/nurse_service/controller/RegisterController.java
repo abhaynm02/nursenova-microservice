@@ -1,13 +1,13 @@
 package com.abhay.nurse_service.controller;
 
-import com.abhay.nurse_service.dto.ImageLink;
 import com.abhay.nurse_service.dto.NurseDto;
 import com.abhay.nurse_service.dto.NurseRequest;
-import com.abhay.nurse_service.model.Nurse;
+import com.abhay.nurse_service.dto.ServiceResponse;
+import com.abhay.nurse_service.model.NurseService;
+import com.abhay.nurse_service.service.serviceImp.NurseServiceImp;
 import com.abhay.nurse_service.service.serviceImp.RegisterServiceImp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,9 +21,11 @@ import java.util.List;
 public class RegisterController {
 
     private final RegisterServiceImp registerService;
+    private  final NurseServiceImp nurseServiceImp;
 
-    public RegisterController(RegisterServiceImp registerService) {
+    public RegisterController(RegisterServiceImp registerService, NurseServiceImp nurseServiceImp) {
         this.registerService = registerService;
+        this.nurseServiceImp = nurseServiceImp;
     }
 
     @PostMapping("/details")
@@ -43,4 +45,8 @@ public class RegisterController {
     public ResponseEntity<List<NurseDto>>findAllNurses(){
         return  new ResponseEntity<>(registerService.findAllNurses(),HttpStatus.OK);
    }
+//   @GetMapping("/test/services")
+//    public ResponseEntity<List<ServiceResponse>>findServicesByNurse(@RequestParam String username){
+//        return new ResponseEntity<>(nurseServiceImp.findServices(username),HttpStatus.OK);
+//   }
 }

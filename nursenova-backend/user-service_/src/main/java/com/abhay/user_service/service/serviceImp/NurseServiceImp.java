@@ -1,10 +1,13 @@
 package com.abhay.user_service.service.serviceImp;
 
 import com.abhay.user_service.dto.ProfileDto;
+import com.abhay.user_service.dto.ServiceResponse;
 import com.abhay.user_service.exceptions.customexception.InternalServiceDownException;
 import com.abhay.user_service.exceptions.customexception.UserNotFoundExceptions;
 import com.abhay.user_service.feignclient.NurseClient;
+import com.abhay.user_service.model.Services;
 import com.abhay.user_service.model.User;
+import com.abhay.user_service.repository.ServicesRepository;
 import com.abhay.user_service.repository.UserRepository;
 import com.abhay.user_service.service.NurseService;
 import feign.FeignException;
@@ -13,6 +16,7 @@ import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -21,10 +25,12 @@ import java.util.Optional;
 public class NurseServiceImp implements NurseService {
     private final UserRepository userRepository;
     private  final NurseClient nurseClient;
+    private final ServicesRepository servicesRepository;
 
-    public NurseServiceImp(UserRepository userRepository, NurseClient nurseClient) {
+    public NurseServiceImp(UserRepository userRepository, NurseClient nurseClient, ServicesRepository servicesRepository) {
         this.userRepository = userRepository;
         this.nurseClient = nurseClient;
+        this.servicesRepository = servicesRepository;
     }
 
     @Override
@@ -59,5 +65,18 @@ public class NurseServiceImp implements NurseService {
         log.error("Circuit breaker fallback: Failed to block/unblock nurse. NurseId: {}, Status: {}", nurseId, status, ex);
         throw new InternalServiceDownException("Internal service is down please try again ");
     }
+    @Override
+    public List<ServiceResponse>findServicesForNurseSelecting(){
+        List<Services>services= servicesRepository.findByStatus(true);
+        return services.stream().map(service->{
+            return new ServiceResponse( service.getId(),
+                    service.getServiceName(),
+                    service.getDescription(),service.getBasePrice(),
+                    service.isStatus());
+        }).toList();
     }
+
+
+
+}
 

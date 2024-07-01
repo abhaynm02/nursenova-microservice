@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 @Component
 public class RouteValidator {
 
-    public static final List<String>ALLOWED =List.of("/register/details","/register/all");
+    public static final List<String>ALLOWED =List.of("/register/details","/register/all","/register/test/services");
 
     public Predicate<ServerHttpRequest>isSecured=serverHttpRequest -> ALLOWED
             .stream()

@@ -1,5 +1,6 @@
 package com.abhay.nurse_service.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -25,6 +26,7 @@ public class NurseService {
     private Nurse nurse;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nurseService", fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<DutyType> dutyTypes;
     private boolean isAvailable;
 }
