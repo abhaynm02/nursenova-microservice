@@ -107,3 +107,22 @@ export const changePassword =async(data)=>{
         return errorHandle(error);
     }
 }
+
+export const availableLocation =async()=>{
+    try {
+        const response =await Api.get(userRoutes.availableLocation);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+export const fetchNursesByAvailableLocationsAndService =async(location,serviceId)=>{
+    try {
+        const response =await Api.get(`${userRoutes.findNursesByAvailableLocation}?location=${location}&serviceId=${serviceId}`);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}

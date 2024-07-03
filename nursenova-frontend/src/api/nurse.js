@@ -1,5 +1,4 @@
 
-import { data } from "autoprefixer";
 import Api from "../service/axios";
 import nurseRoutes from "../service/endpoints/NurseEndPoints";
 import errorHandle from "./error";
@@ -92,5 +91,37 @@ export const fetchServices =async(username,page,size,searchKey)=>{
          return response;
     } catch (error) {
         return errorHandle(error);
+    }
+}
+
+export const blcokServices =async(serviceId,status)=>{
+
+    try {
+        const response =await Api.post(`${nurseRoutes.blcokService}?serviceId=${serviceId}&status=${status}`);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const findServiceById= async(serviceId)=>{
+    try {
+        const response = await Api.get(`${nurseRoutes.findServiceById}?serviceId=${serviceId}`);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+
+}
+
+export const deleteDuty =async(dutyId)=>{
+    try {
+        const response =await Api.delete(`${nurseRoutes.deleteDuty}/${dutyId}`)
+        
+    } catch (error) {
+        return errorHandle(error);
+        
     }
 }

@@ -63,7 +63,7 @@ const DetailsSubmit = () => {
           experience: experience,
           education: education,
           address: address,
-          pin: pin,
+          location: pin,
           phone: phone
         })], { type: "application/json" }));
         formData.append('profile', profilePicture);
@@ -93,7 +93,7 @@ const DetailsSubmit = () => {
     if (!profilePicture) newErrors.profilePicture = 'Profile picture is required';
     if (!certificate) newErrors.certificate = 'Certificate is required';
     if (!address.trim()) newErrors.address = 'Address is required';
-    if (!pin.trim()) newErrors.pin = 'Pin code is required';
+    if (!pin.trim()) newErrors.pin = 'location  is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -270,13 +270,14 @@ const DetailsSubmit = () => {
               {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
             </div>
             <div className="flex flex-col">
-              <label className="font-semibold mb-2">Pin Code</label>
+              <label className="font-semibold mb-2">Work location </label>
               <input
                 onChange={(e) => setPin(e.target.value)}
                 className={`border p-3 rounded-md ${errors.pin ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-green-400`}
                 type="text"
-                placeholder="Enter your pin code"
+                placeholder="Enter your Work location "
               />
+              <p className='font-semibold mb-2'>enter your work location </p>
               {errors.pin && <p className="text-red-500 text-sm mt-1">{errors.pin}</p>}
             </div>
           </div>

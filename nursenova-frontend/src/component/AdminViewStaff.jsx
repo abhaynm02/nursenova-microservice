@@ -67,6 +67,7 @@ const AdminViewStaff = () => {
         <p className="text-gray-600">Gender: {nurseData.gender}</p>
         <p className="text-gray-600">Phone: {nurseData.phone}</p>
         <p className="text-gray-600">Address: {nurseData.address}</p>
+        <p className="text-gray-600">Work Location: {nurseData.location}</p>
       </div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">

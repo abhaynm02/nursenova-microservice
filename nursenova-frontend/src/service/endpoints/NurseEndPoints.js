@@ -8,6 +8,10 @@ const nurseRoutes ={
      showServices:'/user/nurse/show/services',
      addService:'/nurse/service/add',
      fetchServices:'/nurse/service/select/services',
+     blcokService:'/nurse/service/block',
+     findServiceById:'/nurse/service/find-by/id',
+     deleteDuty:'/nurse/service/delete/duty-type',
+
 
 }
 

@@ -10,6 +10,8 @@ const userRoutes ={
       profile:'/user/profile',
       updateProfile:'/user/profile/update',
       changePassword:'/user/profile/change-password',
+      availableLocation:'/register/home/available/locations',
+      findNursesByAvailableLocation:'/register/home/nurses/service',
 
 
 

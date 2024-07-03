@@ -13,6 +13,7 @@ import WorkWithUs from '../component/WorkWithUs'
 import UserProfileLayout from '../layout/UserProfileLayout'
 import UserProfileRoutes from './UserProfileRoutes'
 import UserProtected from '../component/Protected/UserProtected'
+import DisplayNurses from '../component/DisplayNurses'
 
 const UserRoutes = () => {
   return (
@@ -27,6 +28,7 @@ const UserRoutes = () => {
         <Route path='/password-submit' element={<PasswordSubmit />} />
         <Route path='/services' element={<UserServices></UserServices>}></Route>
         <Route path='/work-withus' element={<WorkWithUs></WorkWithUs>}></Route>
+        <Route path='/nurses/service/:location/:serviceId' element={<DisplayNurses></DisplayNurses>}></Route>
         <Route element={<UserProtected></UserProtected>}>
         <Route path='/profile/*' element={<UserProfileRoutes></UserProfileRoutes>} />
         </Route>

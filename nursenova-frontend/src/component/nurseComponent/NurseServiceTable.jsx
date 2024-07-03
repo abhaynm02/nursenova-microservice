@@ -1,6 +1,8 @@
 import React from 'react'
 
-const NurseServiceTable = ({services}) => {
+const NurseServiceTable = ({services ,blockService,handleEdit}) => {
+
+
   return (
     <div className="container mx-auto px-2 sm:px-2">
     <div className="py-8">
@@ -64,12 +66,12 @@ const NurseServiceTable = ({services}) => {
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <button
                       onClick={() => handleEdit(service.id)}
-                      className="text-indigo-600 hover:text-indigo-900 mr-2"
+                      className="  text-indigo-600 hover:text-indigo-900 mr-2"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => handleBlock(service.id)}
+                      onClick={() => blockService(service.id,service.available)}
                       className={`${
                         service.available ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'
                       }`}
