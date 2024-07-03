@@ -50,7 +50,7 @@ public class ProfileServiceImp implements ProfileService {
               nurseDto.setAge(nurse.getAge());
               nurseDto.setGender(String.valueOf(nurse.getGender()));
               nurseDto.setAddress(nurse.getAddress());
-              nurseDto.setPin(nurse.getPin());
+              nurseDto.setLocation(nurse.getLocation());
               nurseDto.setEducation(nurse.getEducation());
               nurseDto.setExperience(nurse.getExperience());
               nurseDto.setVerified(nurse.isVerified());

@@ -38,11 +38,30 @@ public class NurseServiceController {
     }
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_NURSE')")
-    public ResponseEntity<String>addService(@RequestBody ServiceAddRequest request
-           ){
-
+    public ResponseEntity<String>addService(@RequestBody ServiceAddRequest request){
         log.info("nurse Service : {}",request);
         nurseServiceImp.addService( request);
         return new ResponseEntity<>("service added successfully", HttpStatus.OK);
     }
+    @PostMapping("/block")
+    @PreAuthorize("hasRole('ROLE_NURSE')")
+    public ResponseEntity<String>blockService(@RequestParam Long serviceId,@RequestParam boolean status){
+        nurseServiceImp.blockService(serviceId,status);
+        return new ResponseEntity<>("Service block successfully",HttpStatus.OK);
+    }
+    @GetMapping("/find-by/id")
+    @PreAuthorize("hasRole('ROLE_NURSE')")
+    public ResponseEntity<ServiceResponse>findServiceById(@RequestParam long serviceId){
+
+        return new ResponseEntity<>(nurseServiceImp.findServiceById(serviceId),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/duty-type/{dutyId}")
+    @PreAuthorize("hasRole('ROLE_NURSE')")
+    public ResponseEntity<Void>deleteDutyType(@PathVariable long dutyId){
+        log.info("dutyId: {}",dutyId);
+        nurseServiceImp.deleteDutyType(dutyId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

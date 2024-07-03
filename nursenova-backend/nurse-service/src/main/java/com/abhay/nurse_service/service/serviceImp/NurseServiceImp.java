@@ -6,6 +6,7 @@ import com.abhay.nurse_service.dto.ServiceDutyResponse;
 import com.abhay.nurse_service.dto.ServiceResponse;
 import com.abhay.nurse_service.exceptions.customexceptions.DuplicateServiceEntryException;
 import com.abhay.nurse_service.exceptions.customexceptions.NurseNotFoundException;
+import com.abhay.nurse_service.exceptions.customexceptions.ServiceNotFoundException;
 import com.abhay.nurse_service.model.Duty;
 import com.abhay.nurse_service.model.DutyType;
 import com.abhay.nurse_service.model.Nurse;
@@ -123,6 +124,55 @@ public class NurseServiceImp implements NurseServiceI {
             response.setDutyTypes(dutyResponses);
             return response;
         });
+    }
+
+    @Override
+    @Transactional
+    public void blockService(long serviceId, boolean status) {
+        Optional<NurseService>optionalNurseService =nurseServiceRepository.findById(serviceId);
+        if (optionalNurseService.isPresent()){
+            NurseService service =optionalNurseService.get();
+            service.setAvailable(status);
+            nurseServiceRepository.save(service);
+
+        }else {
+          throw  new ServiceNotFoundException("service not found");
+        }
+    }
+
+    @Override
+    public ServiceResponse findServiceById(long serviceId) {
+      NurseService nurseService=nurseServiceRepository.findById(serviceId).
+              orElseThrow(()->new ServiceNotFoundException("service Not found"));
+
+            ServiceResponse response =new ServiceResponse();
+            response.setServiceName(nurseService.getServiceName());
+            response.setServiceId(nurseService.getServiceId());
+            response.setAvailable(nurseService.isAvailable());
+            response.setId(nurseService.getId());
+           List< ServiceDutyResponse>dutyResponses=nurseService.getDutyTypes().stream().map(service->{
+               return new ServiceDutyResponse(service.getId(),
+                       service.getDutyType(),
+                       service.getServicePrice());
+
+           }).toList();
+           response.setDutyTypes(dutyResponses);
+           return response;
+
+
+
+    }
+
+    @Override
+    @Transactional
+    public void deleteDutyType(long dutyId) {
+        log.info("duty Id: {}",dutyId);
+        if (dutyTypeRepository.existsById(dutyId)){
+            dutyTypeRepository.deleteById(dutyId);
+        }else {
+            log.info("duty is not found :{}",dutyId);
+        }
+
     }
 
 

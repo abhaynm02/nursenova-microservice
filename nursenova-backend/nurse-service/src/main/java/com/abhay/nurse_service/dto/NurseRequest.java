@@ -20,6 +20,6 @@ public class NurseRequest {
     private  String experience;
     private String education;
     private String address;
-    private String pin;
+    private String location;
     private String username;
 }

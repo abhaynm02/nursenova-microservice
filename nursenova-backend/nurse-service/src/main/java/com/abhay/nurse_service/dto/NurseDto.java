@@ -22,7 +22,7 @@ public class NurseDto {
     private String profileImageLink;
     private String certificateImageLink;
     private String address;
-    private String pin;
+    private String location;
     private String gender;
     private List<LanguageDto> languages;
     private boolean isVerified;

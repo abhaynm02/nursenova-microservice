@@ -29,4 +29,8 @@ public class GlobalExceptionHandler {
     ResponseEntity<?>handleNurseNotFoundException(NurseNotFoundException ex,WebRequest request){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(ServiceNotFoundException.class)
+    ResponseEntity<?>handleServiceNotFoundException(ServiceNotFoundException ex,WebRequest request){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.OK);
+    }
 }

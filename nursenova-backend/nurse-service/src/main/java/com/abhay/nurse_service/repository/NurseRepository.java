@@ -25,4 +25,9 @@ public interface NurseRepository extends JpaRepository<Nurse,Long> {
 
     @Query("SELECT  p FROM Nurse p WHERE p.firstName LIKE %:searchKey% OR p.lastName LIKE %:searchKey%")
     Page<Nurse>searchServices(Pageable pageable, @Param("searchKey") String searchKey);
+
+    @Query("SELECT DISTINCT n.location FROM Nurse n")
+    List<String> findAllDistinctLocations();
+    @Query("SELECT n FROM Nurse n JOIN n.nurseServices ns WHERE n.location = :location AND ns.serviceId = :serviceId")
+    List<Nurse> findByLocationAndService(@Param("location") String location, @Param("serviceId") long serviceId);
 }

@@ -50,7 +50,7 @@ public class RegisterServiceImp implements RegisterService {
              nurseDto.setAge(nurse.getAge());
              nurseDto.setGender(String.valueOf(nurse.getGender()));
              nurseDto.setAddress(nurse.getAddress());
-             nurseDto.setPin(nurse.getPin());
+             nurseDto.setLocation(nurse.getLocation());
              nurseDto.setEducation(nurse.getEducation());
              nurseDto.setExperience(nurse.getExperience());
              nurseDto.setVerified(nurse.isVerified());
@@ -91,7 +91,7 @@ public class RegisterServiceImp implements RegisterService {
         nurse.setVerified(false);
         nurse.setStatus(false);
         nurse.setPhone(request.getPhone());
-        nurse.setPin(request.getPin());
+        nurse.setLocation(request.getLocation());
 
         // Saving nurse first to generate ID
         nurse = nurseRepository.save(nurse);
@@ -155,7 +155,7 @@ public class RegisterServiceImp implements RegisterService {
             nurseDto.setAge(nurse.getAge());
             nurseDto.setGender(String.valueOf(nurse.getGender()));
             nurseDto.setAddress(nurse.getAddress());
-            nurseDto.setPin(nurse.getPin());
+            nurseDto.setLocation(nurse.getLocation());
             nurseDto.setEducation(nurse.getEducation());
             nurseDto.setExperience(nurse.getExperience());
             nurseDto.setVerified(nurse.isVerified());

@@ -27,7 +27,7 @@ public class Nurse {
     private String profileImageLink;
     private String certificateImageLink;
     private String address;
-    private String pin;
+    private String location;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;

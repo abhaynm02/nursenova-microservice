@@ -25,7 +25,7 @@ public class NurseService {
     @JsonBackReference
     private Nurse nurse;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "nurseService", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "nurseService",orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<DutyType> dutyTypes;
     private boolean isAvailable;
