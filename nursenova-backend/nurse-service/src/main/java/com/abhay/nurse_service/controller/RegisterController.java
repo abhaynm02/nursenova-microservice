@@ -3,6 +3,7 @@ package com.abhay.nurse_service.controller;
 import com.abhay.nurse_service.dto.DisplayNurseDto;
 import com.abhay.nurse_service.dto.NurseDto;
 import com.abhay.nurse_service.dto.NurseRequest;
+import com.abhay.nurse_service.dto.ViewNurseDto;
 import com.abhay.nurse_service.model.Nurse;
 import com.abhay.nurse_service.service.serviceImp.NurseServiceImp;
 import com.abhay.nurse_service.service.serviceImp.RegisterServiceImp;
@@ -51,10 +52,16 @@ public class RegisterController {
 
 
    @GetMapping("/test/services")
-    public ResponseEntity<List<DisplayNurseDto>>getNursesByLocationAndService(@RequestParam String location,
-                                                                              @RequestParam long serviceId){
-        return new ResponseEntity<>(userHomeServiceImp.findByLocationAndService(location,serviceId),HttpStatus.OK);
+   public ResponseEntity<ViewNurseDto>viewNurseByService(@RequestParam String nurseId,
+                                                         @RequestParam long serviceId){
+
+        return new ResponseEntity<>(userHomeServiceImp.findNurseForBooking(nurseId,serviceId),HttpStatus.OK);
    }
+//    public ResponseEntity<List<DisplayNurseDto>>getNursesByLocationAndService(@RequestParam String location,
+//                                                                              @RequestParam long serviceId){
+//        return new ResponseEntity<>(userHomeServiceImp.findByLocationAndService(location,serviceId),HttpStatus.OK);
+//   }
+
 //    public ResponseEntity<List<ServiceResponse>>findServicesByNurse(@RequestParam String username){
 //        return new ResponseEntity<>(nurseServiceImp.findServices(username),HttpStatus.OK);
 //   }

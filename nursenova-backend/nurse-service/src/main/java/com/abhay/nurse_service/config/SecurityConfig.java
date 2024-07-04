@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers("/register/**").permitAll()
-                            .requestMatchers("/nurse/**").hasAnyAuthority("ROLE_NURSE","ROLE_ADMIN")
+                            .requestMatchers("/nurse/**").hasAnyAuthority("ROLE_NURSE","ROLE_ADMIN","ROLE_USER")
                             .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
                             .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER")
                             .anyRequest().authenticated();
