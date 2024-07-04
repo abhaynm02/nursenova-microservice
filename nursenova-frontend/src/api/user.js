@@ -126,3 +126,13 @@ export const fetchNursesByAvailableLocationsAndService =async(location,serviceId
         return errorHandle(error);
     }
 }
+
+export const fetchNurseDetailsByService =async(userName,serviceId)=>{
+    try {
+        const response =await Api.get(`${userRoutes.viewNurseDetails}?userId=${userName}&serviceId=${serviceId}`);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}

@@ -1,22 +1,25 @@
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import NurseProfileLayout from '../layout/NurseProfileLayout'
-import NurseProfile from '../component/nurseComponent/NurseProfile'
-import UserPasswordChange from '../component/UserPasswordChange'
-import NurseDetails from '../component/nurseComponent/NurseDetails'
+import LoadingSpinner from '../component/LoadingSpinner' 
+
+// Lazy load components
+const NurseProfile = lazy(() => import('../component/nurseComponent/NurseProfile'))
+const UserPasswordChange = lazy(() => import('../component/UserPasswordChange'))
+const NurseDetails = lazy(() => import('../component/nurseComponent/NurseDetails'))
 
 const NurseProfileRoutes = () => {
   return (
     <div>
+      <Suspense fallback={<LoadingSpinner />}>
         <Routes>
-            <Route element={<NurseProfileLayout></NurseProfileLayout>}>
-            <Route index element={<NurseProfile></NurseProfile>}></Route>
-            <Route path='/change-password' element={<UserPasswordChange></UserPasswordChange>}></Route>
-            <Route path='/details' element={<NurseDetails></NurseDetails>}></Route>
-
-            </Route>
+          <Route element={<NurseProfileLayout />}>
+            <Route index element={<NurseProfile />} />
+            <Route path='/change-password' element={<UserPasswordChange />} />
+            <Route path='/details' element={<NurseDetails />} />
+          </Route>
         </Routes>
-      
+      </Suspense>
     </div>
   )
 }

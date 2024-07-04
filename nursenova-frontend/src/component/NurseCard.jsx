@@ -1,6 +1,6 @@
 import React from 'react';
 
-const NurseCard = ({ nurse }) => {
+const NurseCard = ({ nurse,handleSelectNurse }) => {
   return (
     <div className="bg-white shadow-lg rounded-xl overflow-hidden m-4 max-w-sm w-full transition-transform duration-300 hover:scale-105 flex flex-col">
       <div 
@@ -43,7 +43,7 @@ const NurseCard = ({ nurse }) => {
             ))}
           </ul>
         </div>
-        <button className="w-full mt-auto bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 font-semibold text-sm">
+        <button onClick={()=>handleSelectNurse(nurse.userName,nurse.serviceId)} className="w-full mt-auto bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 font-semibold text-sm">
           View Details
         </button>
       </div>

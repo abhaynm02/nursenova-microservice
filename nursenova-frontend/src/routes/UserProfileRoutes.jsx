@@ -1,22 +1,26 @@
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import UserProfileLayout from '../layout/UserProfileLayout'
-import Profile from '../component/Profile'
-import UserPasswordChange from '../component/UserPasswordChange'
-import UserWallet from '../component/UserWallet'
+import LoadingSpinner from '../component/LoadingSpinner' 
+
+// Lazy load components
+const Profile = lazy(() => import('../component/Profile'))
+const UserPasswordChange = lazy(() => import('../component/UserPasswordChange'))
+const UserWallet = lazy(() => import('../component/UserWallet'))
 
 const UserProfileRoutes = () => {
   return (
     <div>
-      <Routes>
-        <Route element={<UserProfileLayout></UserProfileLayout>}>
-        <Route index element={<Profile></Profile>}></Route>
-        <Route path='/log' element={<Profile></Profile>}></Route>
-        <Route path='/change-password' element={<UserPasswordChange></UserPasswordChange>}></Route>
-        <Route path='/wallet' element={<UserWallet></UserWallet>}></Route>
-
-        </Route>
-      </Routes>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          <Route element={<UserProfileLayout />}>
+            <Route index element={<Profile />} />
+            <Route path='/log' element={<Profile />} />
+            <Route path='/change-password' element={<UserPasswordChange />} />
+            <Route path='/wallet' element={<UserWallet />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </div>
   )
 }

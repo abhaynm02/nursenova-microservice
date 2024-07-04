@@ -4,6 +4,7 @@ import{allServices,addService,findServiceById, editService, blockOrUnblockServic
 import { toast } from 'react-toastify';
 import { ArrowDown, ArrowUp, ArrowUpDown, PlusIcon, Search } from 'lucide-react';
 import PageNavigationBar from './PageNavigationBar';
+import LoadingSpinner from './LoadingSpinner';
 
 
 
@@ -23,14 +24,18 @@ const AdminServices = () => {
  const[searchKey,setSearchKey]=useState('');
  const [priceFilter, setPriceFilter] = useState('');
  const [sort, setSort] = useState({ key: '' });
+ const [loading, setLoading] = useState(true);
   useEffect(()=>{
     const fetchServices = async () => {
       try {
+        setLoading(true)
         const response = await allServices(currentPage - 1, pageSize,searchKey,sort.key);
         setServices(response.data.content);
         setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error("Error fetching services:", error);
+      }finally{
+        setLoading(false)
       }
     };
 
@@ -155,6 +160,7 @@ const AdminServices = () => {
       key: prevSort.key === 'asc' ? 'des' : prevSort.key === 'des' ? '' : 'asc'
     }));
   };
+  if(loading) return <LoadingSpinner></LoadingSpinner>;
   
   return (
     <div className="container mx-auto px-4 py-8">

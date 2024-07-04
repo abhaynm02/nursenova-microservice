@@ -13,6 +13,7 @@ import NurseServiceTable from "./NurseServiceTable";
 import PageNavigationBar from "../PageNavigationBar";
 import { Search } from "lucide-react";
 import EditServiceModal from "./EditServiceModal";
+import LoadingSpinner from "../LoadingSpinner";
 
 const NurseService = () => {
   const [showModal, setShowModal] = useState(false);
@@ -39,6 +40,7 @@ const NurseService = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [searchKey, setSearchKey] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -89,6 +91,7 @@ const NurseService = () => {
   useEffect(() => {
     const fetchService = async (nurse) => {
       try {
+        setLoading(true)
         const response = await fetchServices(
           nurse,
           currentPage - 1,
@@ -100,6 +103,8 @@ const NurseService = () => {
         setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error("Error fetching services:", error);
+      }finally{
+        setLoading(false)
       }
     };
 
@@ -213,6 +218,9 @@ const NurseService = () => {
     selectModalClose(!selectModal);
     handleClose();
   };
+
+  if(loading)return <LoadingSpinner></LoadingSpinner>;
+  
 
   return (
     <div className="container mx-auto px-4 py-8">

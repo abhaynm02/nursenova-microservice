@@ -12,6 +12,7 @@ const userRoutes ={
       changePassword:'/user/profile/change-password',
       availableLocation:'/register/home/available/locations',
       findNursesByAvailableLocation:'/register/home/nurses/service',
+      viewNurseDetails:'/nurse/home/view/nurse'
 
 
 
