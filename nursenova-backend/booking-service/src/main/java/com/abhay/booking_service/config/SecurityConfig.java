@@ -1,6 +1,8 @@
-package com.abhay.nurse_service.config;
+package com.abhay.booking_service.config;
 
-import com.abhay.nurse_service.filter.JwtFilter;
+
+import com.abhay.booking_service.filter.JwtFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -9,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableWebSecurity
@@ -23,6 +24,7 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.info("Configuring security filter chain");
@@ -30,8 +32,8 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> {
-                    req.requestMatchers("/register/**").permitAll()
-                            .requestMatchers("/nurse/**").hasAnyAuthority("ROLE_NURSE","ROLE_ADMIN","ROLE_USER")
+                    req.requestMatchers("/test/**").permitAll()
+                            .requestMatchers("/booking/**").hasAnyAuthority("ROLE_NURSE","ROLE_ADMIN","ROLE_USER")
                             .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
                             .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER")
                             .anyRequest().authenticated();

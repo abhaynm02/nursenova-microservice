@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -31,6 +32,13 @@ public class NurseController {
      @PreAuthorize("hasRole('ROLE_NURSE')")
      public ResponseEntity<Boolean>updateProfile(@RequestBody ProfileDto profileDto){
         return new ResponseEntity<>(profileServiceImp.updateProfile(profileDto),HttpStatus.OK);
+     }
+     @PostMapping("/profile/image/update")
+     @PreAuthorize("hasRole('ROLE_NURSE')")
+     public ResponseEntity<?>updateProfilePicture(@RequestParam String username,
+                                                  @RequestPart("profile") MultipartFile profile ){
+        profileServiceImp.updateProfilePicture(username,profile);
+        return new ResponseEntity<>("profile picture updated successfully ",HttpStatus.OK);
      }
      @GetMapping("/profile/details/{username}")
      @PreAuthorize("hasRole('ROLE_NURSE')")

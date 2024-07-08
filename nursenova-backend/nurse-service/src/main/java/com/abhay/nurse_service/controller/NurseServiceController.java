@@ -25,7 +25,7 @@ public class NurseServiceController {
         this.nurseServiceImp = nurseServiceImp;
     }
     @GetMapping("/select/services")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_NURSE')")
     public ResponseEntity<Page<ServiceResponse>>findSelectServices(@RequestParam String username,
                                                                    @RequestParam(defaultValue = "0")int page
                                                                  , @RequestParam(defaultValue = "5")int size,
