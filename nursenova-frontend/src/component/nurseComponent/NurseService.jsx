@@ -14,6 +14,7 @@ import PageNavigationBar from "../PageNavigationBar";
 import { Search } from "lucide-react";
 import EditServiceModal from "./EditServiceModal";
 import LoadingSpinner from "../LoadingSpinner";
+import SlotModal from "./SlotModal";
 
 const NurseService = () => {
   const [showModal, setShowModal] = useState(false);
@@ -41,6 +42,12 @@ const NurseService = () => {
   const [pageSize, setPageSize] = useState(5);
   const [searchKey, setSearchKey] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const[slotOpen,setSlotOpen]=useState(false);
+
+  const handleSlotClose =()=>{
+    setSlotOpen(!slotOpen);
+  }
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -228,12 +235,21 @@ const NurseService = () => {
         Services
       </h1>
       <div className=" flex gap-2 w-full justify-between mb-4">
+        <div className="flex gap-2">
         <button
           onClick={() => showServicesForSelecting()}
           className="bg-green-400 hover:bg-green-500 text-white font-semibold py-1 px-4 rounded-md shadow-md transition duration-300"
         >
           Add Service
         </button>
+        <button
+          onClick={() => setSlotOpen(true)}
+          className="bg-green-400 hover:bg-green-500 text-white font-semibold py-1 px-4 rounded-md shadow-md transition duration-300"
+        >
+          Schedule Slot
+        </button>
+
+        </div>
         <div className="flex gap-2">
           <div className="relative max-w-md w-full">
             <input
@@ -260,6 +276,8 @@ const NurseService = () => {
         totalPages={totalPages}
         handlePageChange={handlePageChange}
       />
+
+      <SlotModal isVisible={slotOpen} onClose={handleSlotClose}></SlotModal>
       <EditServiceModal
         isOpen={editModal}
         onClose={editModalClose}

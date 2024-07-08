@@ -2,7 +2,7 @@ import React, { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import AdminLayout from '../layout/AdminLayout'
 import AdminProtected from '../component/Protected/AdminProtected'
-import LoadingSpinner from '../component/LoadingSpinner' // Assuming you have this component
+import LoadingSpinner from '../component/LoadingSpinner' 
 
 // Lazy load components
 const AdminServices = lazy(() => import('../component/AdminServices'))

@@ -11,7 +11,6 @@ const Login = () => {
   const [email, setEmaill] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
-  const[role,setRoleN]=useState("");
   const navigate =useNavigate();
   const dispatch = useDispatch();
 
@@ -20,44 +19,42 @@ const Login = () => {
     console.log("clicked")
     e.preventDefault();
     if (validate()) {
-      console.log({ email, password });
-
-      const data ={
-        email:email,
-        password:password
-      }
-      const response =await login(data);
-      console.log(response);
-
-      if(response){
-        console.log(response.data,"this is response")
-        setRoleN(response.data.role);
+        console.log({ email, password });
         
-        dispatch(setEmail(response.data.username));
-        dispatch(setRole(response.data.role));
-        dispatch(setToken(response.data.token))
-        console.log(response.data.role)
-        
-        if (role === "ADMIN") {
-          toast.success("Logged in as admin");
-          navigate("/admin/dashboard");
+        const data = {
+            email: email,
+            password: password
         }
-       
-        if (role === "USER") {
-          toast.success("Logged in as user");
-          navigate("/");
-        } 
-        if(role =="NURSE"){
-          toast.success("Logged in as nurse")
-          navigate("/nurse/home")
-        }
+        const response = await login(data);
         
-
-      }
+        if(response && response.data){
+            const userRole = response.data.role;
+            
+            dispatch(setEmail(response.data.username));
+            dispatch(setRole(userRole));
+            dispatch(setToken(response.data.token))
+            
+            switch(userRole) {
+                case "ADMIN":
+                    toast.success("Logged in as admin");
+                    navigate("/admin/dashboard");
+                    break;
+                case "USER":
+                    toast.success("Logged in as user");
+                    navigate("/");
+                    break;
+                case "NURSE":
+                    toast.success("Logged in as nurse");
+                    navigate("/nurse/home");
+                    break;
+                default:
+                    toast.error("Unknown role");
+            }
+        } else {
+            toast.error("Login failed");
+        }
     }
-      
-  };
-  
+};
 
   const validate = () => {
     const newErrors = {};

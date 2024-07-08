@@ -273,7 +273,7 @@ const DetailsSubmit = () => {
               <label className="font-semibold mb-2">Work location </label>
               <input
                 onChange={(e) => setPin(e.target.value)}
-                className={`border p-3 rounded-md ${errors.pin ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-green-400`}
+                className={`border uppercase p-3 rounded-md ${errors.pin ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-green-400`}
                 type="text"
                 placeholder="Enter your Work location "
               />

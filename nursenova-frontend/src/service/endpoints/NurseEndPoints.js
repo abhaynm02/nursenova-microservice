@@ -11,6 +11,10 @@ const nurseRoutes ={
      blcokService:'/nurse/service/block',
      findServiceById:'/nurse/service/find-by/id',
      deleteDuty:'/nurse/service/delete/duty-type',
+     updateProfilePicture:'/nurse/profile/image/update',
+     createSlotForBooking:'/booking/nurse/create',
+     findCreateSlots:'/booking/nurse/available/slots',
+     deleteSlotById:'/booking/nurse/delete',
 
 
 }

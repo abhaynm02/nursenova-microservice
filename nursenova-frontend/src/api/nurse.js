@@ -125,3 +125,46 @@ export const deleteDuty =async(dutyId)=>{
         
     }
 }
+
+export const updateProfilePicture =async(userName,data)=>{
+    try {
+        const response =await Api.post(`${nurseRoutes.updateProfilePicture}?username=${userName}`,data,{
+            headers:{
+                'Content-Type':'multipart/form-data'
+            }
+        });
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+export const createSlotForBooking =async(userName,startDate,endDate)=>{
+    try {
+        const response =await Api.post(`${nurseRoutes.createSlotForBooking}/${userName}?startDate=${startDate}&endDate=${endDate}`);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+        
+    }
+}
+
+export const findCreateSlots =async(userName)=>{
+    try {
+        const response =await Api.get(`${nurseRoutes.findCreateSlots}/${userName}`);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const deleteSlotById =async(slotId)=>{
+    try {
+        const response =await Api.delete(`${nurseRoutes.deleteSlotById}/${slotId}`);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
