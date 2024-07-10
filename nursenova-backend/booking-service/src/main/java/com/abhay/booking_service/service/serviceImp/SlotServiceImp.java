@@ -1,5 +1,6 @@
 package com.abhay.booking_service.service.serviceImp;
 
+import com.abhay.booking_service.dto.SlotDto;
 import com.abhay.booking_service.model.Slot;
 import com.abhay.booking_service.repository.BookingRepository;
 import com.abhay.booking_service.repository.SlotRepository;
@@ -38,10 +39,14 @@ public class SlotServiceImp implements SlotService {
     }
 
     @Override
-    public List<Slot> findAvailableSlots(String nurseId) {
+    public List<SlotDto> findAvailableSlots(String nurseId) {
         LocalDate startDate = DateUtils.getTwoDayAfterCurrentDate();
         LocalDate endDate = DateUtils.getEndOfCurrentMoth();
-        return slotRepository.findByNurseIdAndDateBetweenAndIsAvailableTrue(nurseId,startDate,endDate);
+
+        return slotRepository.findByNurseIdAndDateBetweenAndIsAvailableTrue(nurseId,startDate,endDate)
+                .stream()
+                .map(slot -> new SlotDto(slot.getId(),slot.getDate(),slot.isAvailable(),slot.getNurseId()))
+                .toList();
     }
 
     @Override
@@ -52,5 +57,15 @@ public class SlotServiceImp implements SlotService {
             // Handle the case when the slot with the given ID does not exist
             throw new RuntimeException("Slot with ID " + slotId + " not found.");
         }
+    }
+
+    @Override
+    public List<SlotDto> findAvailableSlotsForNurse(String nurseId) {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = DateUtils.getEndOfCurrentMoth();
+        return slotRepository.findByNurseIdAndDateBetweenAndIsAvailableTrue(nurseId,startDate,endDate)
+                .stream()
+                .map(slot -> new SlotDto(slot.getId(),slot.getDate(),slot.isAvailable(),slot.getNurseId()))
+                .toList();
     }
 }

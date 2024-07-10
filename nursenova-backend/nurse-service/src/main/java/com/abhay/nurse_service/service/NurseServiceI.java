@@ -1,6 +1,7 @@
 package com.abhay.nurse_service.service;
 
 
+import com.abhay.nurse_service.dto.CheckoutResponse;
 import com.abhay.nurse_service.dto.ServiceAddRequest;
 import com.abhay.nurse_service.dto.ServiceResponse;
 import org.springframework.data.domain.Page;
@@ -17,4 +18,6 @@ public interface NurseServiceI {
     ServiceResponse findServiceById(long serviceId);
 
     void deleteDutyType(long dutyId);
+
+    CheckoutResponse checkoutDetails(String nurseId, long serviceId);
 }

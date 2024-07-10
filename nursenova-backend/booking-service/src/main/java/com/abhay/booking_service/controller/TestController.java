@@ -1,5 +1,6 @@
 package com.abhay.booking_service.controller;
 
+import com.abhay.booking_service.dto.SlotDto;
 import com.abhay.booking_service.model.Slot;
 import com.abhay.booking_service.service.serviceImp.BookingServiceImp;
 import com.abhay.booking_service.service.serviceImp.SlotServiceImp;
@@ -38,7 +39,7 @@ public class TestController {
     }
     @GetMapping("/available/slots/{nurseId}")
     @PreAuthorize("hasRole('ROLE_NURSE')")
-    public ResponseEntity<List<Slot>>findSlotsByNurse(@PathVariable String nurseId){
+    public ResponseEntity<List<SlotDto>>findSlotsByNurse(@PathVariable String nurseId){
         return new ResponseEntity<>(slotServiceImp.findAvailableSlots(nurseId),HttpStatus.OK);
     }
     @PostMapping("/service/{nurseId}")

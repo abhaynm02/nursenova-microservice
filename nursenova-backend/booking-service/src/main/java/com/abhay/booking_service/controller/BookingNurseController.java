@@ -1,5 +1,6 @@
 package com.abhay.booking_service.controller;
 
+import com.abhay.booking_service.dto.SlotDto;
 import com.abhay.booking_service.model.Slot;
 import com.abhay.booking_service.service.serviceImp.SlotServiceImp;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,8 +32,8 @@ public class BookingNurseController{
     }
     @GetMapping("/available/slots/{nurseId}")
     @PreAuthorize("hasRole('ROLE_NURSE')")
-    public ResponseEntity<List<Slot>>findSlotsByNurse(@PathVariable String nurseId){
-        return new ResponseEntity<>(slotServiceImp.findAvailableSlots(nurseId),HttpStatus.OK);
+    public ResponseEntity<List<SlotDto>>findSlotsByNurse(@PathVariable String nurseId){
+        return new ResponseEntity<>(slotServiceImp.findAvailableSlotsForNurse(nurseId),HttpStatus.OK);
     }
     @DeleteMapping("/delete/{slotId}")
     @PreAuthorize(("hasRole('ROLE_NURSE')"))
