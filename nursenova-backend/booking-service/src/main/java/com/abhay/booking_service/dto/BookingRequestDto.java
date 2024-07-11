@@ -1,21 +1,17 @@
-package com.abhay.booking_service.model;
+package com.abhay.booking_service.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.List;
 
-@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Booking {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class BookingRequestDto {
     private String userId;
     private String nurseId;
     private long serviceId;
@@ -32,9 +28,6 @@ public class Booking {
     private String lastName;
     private String address;
     private String pin;
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "booking",fetch = FetchType.EAGER)
-    private List<BookingSlot> slots;
-    @Enumerated(EnumType.STRING)
-    private BookingStatus status;
     private String paymentId;
+    private List<SlotDto>slotDtos;
 }

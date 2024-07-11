@@ -47,7 +47,7 @@ public class TestController {
     public ResponseEntity<?>bookService(@PathVariable String nurseId,
                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate){
-       bookingServiceImp.placeBooking(nurseId,startDate,endDate);
+//       bookingServiceImp.placeBooking(nurseId,startDate,endDate);
         return new ResponseEntity<>("service booked  successful",HttpStatus.OK);
     }
 }

@@ -63,7 +63,7 @@ public class SlotServiceImp implements SlotService {
     public List<SlotDto> findAvailableSlotsForNurse(String nurseId) {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = DateUtils.getEndOfCurrentMoth();
-        return slotRepository.findByNurseIdAndDateBetweenAndIsAvailableTrue(nurseId,startDate,endDate)
+        return slotRepository.findByNurseIdAndDateBetween(nurseId,startDate,endDate)
                 .stream()
                 .map(slot -> new SlotDto(slot.getId(),slot.getDate(),slot.isAvailable(),slot.getNurseId()))
                 .toList();

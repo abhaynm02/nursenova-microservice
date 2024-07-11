@@ -174,7 +174,7 @@ public class NurseServiceImp implements NurseServiceI {
     }
 
     @Override
-    public CheckoutResponse checkoutDetails(String nurseId, long serviceId) {
+    public CheckoutResponse checkoutDetails(String nurseId, long serviceId,long totalDays) {
          Nurse nurse =nurseRepository.findByUserName(nurseId).orElseThrow(()->new UsernameNotFoundException("nurse not found given email"));
          CheckoutResponse response =new CheckoutResponse();
          response.setFirstName(nurse.getFirstName());
@@ -191,6 +191,7 @@ public class NurseServiceImp implements NurseServiceI {
         DutyType dutyType =dutyTypeRepository.findById(serviceId).orElseThrow(()->new ServiceNotFoundException("service not found with id"));
         response.setDuty(dutyType.getDutyType());
         response.setServicePrice(dutyType.getServicePrice());
+        response.setTotalAmount(dutyType.getServicePrice()*totalDays);
         response.setServiceName(dutyType.getNurseService().getServiceName());
 
         return response;

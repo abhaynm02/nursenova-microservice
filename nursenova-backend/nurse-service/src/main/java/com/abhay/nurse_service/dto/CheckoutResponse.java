@@ -26,4 +26,5 @@ public class CheckoutResponse {
     private String serviceName;
     private  long servicePrice;
     private Duty duty;
+    private long totalAmount;
 }

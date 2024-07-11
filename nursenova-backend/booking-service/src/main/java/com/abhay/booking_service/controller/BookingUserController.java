@@ -1,9 +1,11 @@
 package com.abhay.booking_service.controller;
 
+import com.abhay.booking_service.dto.BookingRequestDto;
 import com.abhay.booking_service.dto.PaymentRequest;
 import com.abhay.booking_service.dto.PaymentResponse;
 import com.abhay.booking_service.dto.SlotDto;
 import com.abhay.booking_service.paypal.PayPalService;
+import com.abhay.booking_service.service.BookingService;
 import com.abhay.booking_service.service.SlotService;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
@@ -21,10 +23,12 @@ import java.util.List;
 public class BookingUserController {
     private final SlotService slotService;
     private final PayPalService payPalService;
+    private final BookingService bookingService;
 
-    public BookingUserController(SlotService slotService, PayPalService payPalService) {
+    public BookingUserController(SlotService slotService, PayPalService payPalService, BookingService bookingService) {
         this.slotService = slotService;
         this.payPalService = payPalService;
+        this.bookingService = bookingService;
     }
    @GetMapping("/available/slots/{nurseId}")
    @PreAuthorize(("hasRole('ROLE_USER')"))
@@ -32,6 +36,7 @@ public class BookingUserController {
         return new ResponseEntity<>(slotService.findAvailableSlots(nurseId),HttpStatus.OK);
     }
     @PostMapping("/payment/create")
+    @PreAuthorize(("hasRole('ROLE_USER')"))
     public ResponseEntity<?> createPayment(@RequestBody PaymentRequest paymentRequest) {
         log.info("Creating payment for request: {}", paymentRequest);
         try {
@@ -58,6 +63,14 @@ public class BookingUserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @PostMapping("/book/service")
+    @PreAuthorize(("hasRole('ROLE_USER')"))
+    public ResponseEntity<?>bookService(@RequestBody BookingRequestDto requestDto){
+        bookingService.placeBooking(requestDto);
+        return new ResponseEntity<>("Service booked successfully",HttpStatus.OK);
+    }
+
 
 //    @PostMapping("/payment/execute")
 //    public ResponseEntity<?> executePayment(@RequestParam("paymentId") String paymentId, @RequestParam("payerId") String payerId) {
