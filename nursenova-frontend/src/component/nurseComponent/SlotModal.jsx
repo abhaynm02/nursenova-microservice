@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, isSameMonth, isSameDay, parse, isAfter, isBefore } from 'date-fns';
 import { useSelector } from "react-redux";
 import { createSlotForBooking, deleteSlotById, findCreateSlots } from "../../api/nurse";
@@ -10,72 +10,61 @@ const SlotModal = ({ isVisible, onClose }) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [error, setError] = useState('');
-  const [slots,setSlots]=useState({});
-  const[edit,setEdit]=useState(false);
+  const [slots, setSlots] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
   const nurseId = useSelector((state) => state.auth.email);
 
-  
-
-  useEffect(()=>{
-   const fethcData =async(userName)=>{
-             try {
-                 const response = await findCreateSlots(userName);
-                 console.log(response)
-                 setSlots(response.data);
-             } catch (error) {
-               console.log(error);
-             }
-   }
-   fethcData(nurseId);
-  },[nurseId,edit])
-
-  const handleDeleteSloat =(slot)=>{
-    console.log(slot);
-    if(slot.available){
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              try {
-               
-               const response =await deleteSlotById(slot.id)
-               console.log(response)
-               setEdit(!edit);
-                Swal.fire("Deleted!", "The duty has been deleted.", "success");
-              } catch (error) {
-                Swal.fire("Error!", "There was a problem deleting the duty.", "error");
-                console.error(error);
-              }
-            }
-          });
-    }else{
-        Swal.fire("The slot is already booked; you can't delete it. ");
+  const fetchSlots = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await findCreateSlots(nurseId);
+      console.log(response.data)
+      setSlots(response.data);
+    } catch (error) {
+      console.error("Error fetching slots:", error);
+      toast.error("Failed to load slots. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-  }
+  }, [nurseId]);
 
-  if (!isVisible) return null;
+  useEffect(() => {
+    if (isVisible) {
+      fetchSlots();
+    }
+  }, [isVisible, fetchSlots]);
 
-  const handleClose = (e) => {
-    if (e.target.id === "wrapper") {
-      onClose();
+  const handleDeleteSlot = async (slot) => {
+    if (!slot.available) {
+      toast.warning("Booked slots cannot be deleted.");
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteSlotById(slot.id);
+        await fetchSlots();
+        toast.success("Slot deleted successfully.");
+      } catch (error) {
+        console.error("Error deleting slot:", error);
+        toast.error("Failed to delete slot. Please try again.");
+      }
     }
   };
-
-  const getSlotForDate = (date) => {
-    return slots.find(slot => isSameDay(new Date(slot.date), date));
-  };
-
 
   const validateDates = () => {
     if (!startDate || !endDate) {
@@ -106,36 +95,37 @@ const SlotModal = ({ isVisible, onClose }) => {
     return true;
   };
 
-  const handleSetSlot = async() => {
+  const handleSetSlot = async () => {
     if (validateDates()) {
-        try {
-            const response =await createSlotForBooking(nurseId,startDate,endDate);
-            if(response){
-                setEdit(!edit);
-                toast.success("slot added successfully");
-
-            }
-        } catch (error) {
-            
-        }
-      console.log(`Setting slot from ${startDate} to ${endDate}`);
+      try {
+        await createSlotForBooking(nurseId, startDate, endDate);
+        await fetchSlots();
+        toast.success("Slots added successfully");
+        setStartDate('');
+        setEndDate('');
+      } catch (error) {
+        console.error("Error creating slots:", error);
+        toast.error("Failed to create slots. Please try again.");
+      }
     }
   };
 
+  const getSlotForDate = (date) => {
+    return slots.find(slot => isSameDay(new Date(slot.date), date));
+  };
+
+  if (!isVisible) return null;
+
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-      id="wrapper"
-      onClick={handleClose}
-    >
-      <div className="bg-white rounded-lg p-6 w-full max-w-4xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center overflow-y-auto">
+      <div className="bg-white rounded-lg p-6 w-full max-w-4xl m-4">
         <h2 className="text-2xl font-bold text-center mb-4">
           {format(currentDate, 'MMMM yyyy')}
         </h2>
         <div className="flex flex-wrap gap-2 mb-4">
           <input
             type="date"
-            className="border rounded p-2"
+            className="border rounded p-2 flex-grow"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             min={format(new Date(), 'yyyy-MM-dd')}
@@ -143,7 +133,7 @@ const SlotModal = ({ isVisible, onClose }) => {
           />
           <input
             type="date"
-            className="border rounded p-2"
+            className="border rounded p-2 flex-grow"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             min={startDate || format(new Date(), 'yyyy-MM-dd')}
@@ -151,37 +141,50 @@ const SlotModal = ({ isVisible, onClose }) => {
           />
           <button
             onClick={handleSetSlot}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
           >
             Set Slot
           </button>
         </div>
         {error && <p className="text-red-500 mb-2">{error}</p>}
-        <div className="grid grid-cols-7 gap-1">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="p-2 text-center bg-gray-200 font-bold">{day}</div>
-          ))}
-          {monthDays.map(day => {
-            const slot = getSlotForDate(day);
-            return (
-              <div
-                key={day.toISOString()}
-                className={`
-                  p-2 border text-center cursor-pointer
-                  ${!isSameMonth(day, currentDate) ? 'text-gray-400' : ''}
-                  ${isToday(day) ? 'bg-blue-100' : ''}
-                  ${slot ? (slot.available ? 'bg-green-100 hover:bg-green-200' : 'bg-red-100 hover:bg-red-200') : 'hover:bg-gray-100'}
-                `}
-              >
-                {format(day, 'd')}
-                {slot && (
-                  <div className={`text-xs ${slot.available ? 'text-green-600' : 'text-red-600'}`} onClick={()=>handleDeleteSloat(slot)}>
-                    {slot.available ? 'Available' : 'Booked'}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        {isLoading ? (
+          <div className="text-center py-4">Loading slots...</div>
+        ) : (
+          <div className="grid grid-cols-7 gap-1">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+              <div key={day} className="p-2 text-center bg-gray-200 font-bold">{day}</div>
+            ))}
+            {monthDays.map(day => {
+              const slot = getSlotForDate(day);
+              return (
+                <div
+                  key={day.toISOString()}
+                  className={`
+                    p-2 border text-center cursor-pointer transition duration-300
+                    ${!isSameMonth(day, currentDate) ? 'text-gray-400' : ''}
+                    ${isToday(day) ? 'bg-blue-100' : ''}
+                    ${slot ? (slot.available ? 'bg-green-100 hover:bg-green-200' : 'bg-red-100 hover:bg-red-200') : 'hover:bg-gray-100'}
+                  `}
+                  onClick={() => slot && handleDeleteSlot(slot)}
+                >
+                  {format(day, 'd')}
+                  {slot && (
+                    <div className={`text-xs mt-1 font-semibold ${slot.available ? 'text-green-600' : 'text-red-600'}`}>
+                      {slot.available ? 'Available' : 'Booked'}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <div className="mt-4 text-center">
+          <button
+            onClick={onClose}
+            className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition duration-300"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>

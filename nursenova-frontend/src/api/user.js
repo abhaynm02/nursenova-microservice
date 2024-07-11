@@ -136,3 +136,48 @@ export const fetchNurseDetailsByService =async(userName,serviceId)=>{
         return errorHandle(error);
     }
 }
+export const findAvailableSlotForBooking =async(userName)=>{
+    try {
+        const response =await Api.get(`${userRoutes.findAvailableSlotForBooking}/${userName}`)
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+export const checkoutDetails =async(nurseId,serviceId,totalDays)=>{
+    try {
+         const response =await Api.get(`${userRoutes.checkoutDetails}?nurseId=${nurseId}&serviceId=${serviceId}&totalDays=${totalDays}`);
+         return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const createOrders =async(data)=>{
+    try {
+        const response =await Api.post(userRoutes.createOrder,data);
+       return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const approveOrder =async(paymentId,payerId)=>{
+    try {
+        const response =await Api.post(`${userRoutes.approveOrder}?paymentId=${paymentId}&payerId=${payerId}`);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const bookservice =async(data)=>{
+    try {
+        const response =await Api.post(userRoutes.bookservice,data);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+        
+    }
+}
