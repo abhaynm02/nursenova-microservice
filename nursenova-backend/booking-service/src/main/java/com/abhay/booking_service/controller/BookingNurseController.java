@@ -1,8 +1,14 @@
 package com.abhay.booking_service.controller;
 
+import com.abhay.booking_service.dto.BookingResponse;
 import com.abhay.booking_service.dto.SlotDto;
-import com.abhay.booking_service.model.Slot;
+import com.abhay.booking_service.dto.ViewBooking;
+import com.abhay.booking_service.service.BookingService;
 import com.abhay.booking_service.service.serviceImp.SlotServiceImp;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +22,11 @@ import java.util.List;
 @RequestMapping("/booking/nurse")
 public class BookingNurseController{
     private final SlotServiceImp slotServiceImp;
+    private final BookingService bookingService;
 
-    public BookingNurseController(SlotServiceImp slotServiceImp) {
+    public BookingNurseController(SlotServiceImp slotServiceImp, BookingService bookingService) {
         this.slotServiceImp = slotServiceImp;
+        this.bookingService = bookingService;
     }
 
 
@@ -40,6 +48,22 @@ public class BookingNurseController{
     public ResponseEntity<?>deleteSlotById(@PathVariable long slotId){
         slotServiceImp.deleteSlot(slotId);
         return new ResponseEntity<>("slot delete successfully",HttpStatus.OK);
+    }
+    @GetMapping("/find/bookings/{nurseId}")
+    @PreAuthorize("hasRole('ROLE_NURSE')")
+    public ResponseEntity<Page<BookingResponse>>findBookingsByNurseId(@PathVariable String nurseId,
+                                                                      @RequestParam(defaultValue = "0")int page,
+                                                                      @RequestParam(defaultValue = "5")int size){
+      Pageable pageable =PageRequest.of(page,size,Sort.by("id").descending());
+
+
+        return new ResponseEntity<>(bookingService.findBookingsForNurse(pageable,nurseId),HttpStatus.OK);
+    }
+
+    @GetMapping("/find/booking/{bookingId}")
+    @PreAuthorize("hasRole('ROLE_NURSE')")
+    public ResponseEntity<ViewBooking>findBookingById(@PathVariable long bookingId){
+        return new ResponseEntity<>(bookingService.findByBookingId(bookingId),HttpStatus.OK);
     }
 
 

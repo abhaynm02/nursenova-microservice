@@ -21,6 +21,7 @@ public class BookingSlot {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private LocalDate date;
+    private Long slotId;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "booking_id", referencedColumnName = "id")
     @JsonBackReference

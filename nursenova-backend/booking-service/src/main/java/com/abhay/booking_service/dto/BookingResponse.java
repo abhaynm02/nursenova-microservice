@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,4 +19,6 @@ public class BookingResponse {
     private long totalDays;
     private BookingStatus status;
     private long totalPrice;
+    private LocalDate startDate;
+    private LocalDate endDate;
 }
