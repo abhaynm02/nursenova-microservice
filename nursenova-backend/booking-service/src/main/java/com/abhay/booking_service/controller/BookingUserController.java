@@ -1,15 +1,17 @@
 package com.abhay.booking_service.controller;
 
-import com.abhay.booking_service.dto.BookingRequestDto;
-import com.abhay.booking_service.dto.PaymentRequest;
-import com.abhay.booking_service.dto.PaymentResponse;
-import com.abhay.booking_service.dto.SlotDto;
+import com.abhay.booking_service.dto.*;
 import com.abhay.booking_service.paypal.PayPalService;
 import com.abhay.booking_service.service.BookingService;
 import com.abhay.booking_service.service.SlotService;
+import com.abhay.booking_service.service.UserBookingService;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,19 +26,21 @@ public class BookingUserController {
     private final SlotService slotService;
     private final PayPalService payPalService;
     private final BookingService bookingService;
+    private final UserBookingService userBookingService;
 
-    public BookingUserController(SlotService slotService, PayPalService payPalService, BookingService bookingService) {
+    public BookingUserController(SlotService slotService, PayPalService payPalService, BookingService bookingService, UserBookingService userBookingService) {
         this.slotService = slotService;
         this.payPalService = payPalService;
         this.bookingService = bookingService;
+        this.userBookingService = userBookingService;
     }
    @GetMapping("/available/slots/{nurseId}")
-   @PreAuthorize(("hasRole('ROLE_USER')"))
+   @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<List<SlotDto>>findAvailableSlotsByNurseId(@PathVariable String nurseId){
         return new ResponseEntity<>(slotService.findAvailableSlots(nurseId),HttpStatus.OK);
     }
     @PostMapping("/payment/create")
-    @PreAuthorize(("hasRole('ROLE_USER')"))
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> createPayment(@RequestBody PaymentRequest paymentRequest) {
         log.info("Creating payment for request: {}", paymentRequest);
         try {
@@ -65,12 +69,25 @@ public class BookingUserController {
     }
 
     @PostMapping("/book/service")
-    @PreAuthorize(("hasRole('ROLE_USER')"))
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?>bookService(@RequestBody BookingRequestDto requestDto){
         bookingService.placeBooking(requestDto);
         return new ResponseEntity<>("Service booked successfully",HttpStatus.OK);
     }
+    @GetMapping("/bookings/{userId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Page<UserBookingsDto>>findUserBookings(@PathVariable String userId,
+                                                                 @RequestParam(defaultValue = "0")int page,
+                                                                 @RequestParam(defaultValue = "5")int size ){
+        Pageable pageable= PageRequest.of(page,size, Sort.by("id").descending());
 
+        return new ResponseEntity<>(userBookingService.findBookingsForUser(pageable,userId),HttpStatus.OK);
+    }
+     @GetMapping("/find/booking/{bookingId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<UserBookingResponseDto>findBookingById(@PathVariable long bookingId){
+        return new ResponseEntity<>(userBookingService.viewBookingDetails(bookingId),HttpStatus.OK);
+     }
 
 //    @PostMapping("/payment/execute")
 //    public ResponseEntity<?> executePayment(@RequestParam("paymentId") String paymentId, @RequestParam("payerId") String payerId) {

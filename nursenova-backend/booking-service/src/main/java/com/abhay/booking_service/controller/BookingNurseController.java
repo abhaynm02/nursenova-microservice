@@ -3,6 +3,8 @@ package com.abhay.booking_service.controller;
 import com.abhay.booking_service.dto.BookingResponse;
 import com.abhay.booking_service.dto.SlotDto;
 import com.abhay.booking_service.dto.ViewBooking;
+import com.abhay.booking_service.exceptions.coustomexceptions.BookingNotFoundException;
+import com.abhay.booking_service.model.BookingStatus;
 import com.abhay.booking_service.service.BookingService;
 import com.abhay.booking_service.service.serviceImp.SlotServiceImp;
 import org.springframework.data.domain.Page;
@@ -65,6 +67,16 @@ public class BookingNurseController{
     public ResponseEntity<ViewBooking>findBookingById(@PathVariable long bookingId){
         return new ResponseEntity<>(bookingService.findByBookingId(bookingId),HttpStatus.OK);
     }
-
-
+    @PatchMapping("/update/booking/status/{bookingId}")
+    @PreAuthorize("hasRole('ROLE_NURSE')")
+    public ResponseEntity<String> updateBookingStatus(@PathVariable long bookingId, @RequestParam  BookingStatus status) {
+        try {
+            bookingService.updateBookingStatus(bookingId, status);
+            return ResponseEntity.ok("Booking status updated successfully");
+        } catch (BookingNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the booking status");
+        }
+    }
 }

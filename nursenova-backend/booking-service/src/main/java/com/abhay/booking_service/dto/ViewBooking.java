@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 @Getter
 @Setter
@@ -28,5 +29,6 @@ public class ViewBooking {
     private String pin;
     private String paymentId;
     private BookingStatus status;
+    private LocalDate startDate;
     private List<SlotDto> slotDtos;
 }
