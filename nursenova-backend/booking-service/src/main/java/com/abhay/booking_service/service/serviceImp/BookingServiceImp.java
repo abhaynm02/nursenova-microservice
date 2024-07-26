@@ -2,7 +2,10 @@ package com.abhay.booking_service.service.serviceImp;
 
 import com.abhay.booking_service.dto.*;
 import com.abhay.booking_service.exceptions.coustomexceptions.BookingNotFoundException;
+import com.abhay.booking_service.exceptions.coustomexceptions.BookingStartDateException;
+import com.abhay.booking_service.exceptions.coustomexceptions.InsufficientBalanceException;
 import com.abhay.booking_service.exceptions.coustomexceptions.SlotNotFoundException;
+import com.abhay.booking_service.feignclient.UserClient;
 import com.abhay.booking_service.model.Booking;
 import com.abhay.booking_service.model.BookingSlot;
 import com.abhay.booking_service.model.BookingStatus;
@@ -11,9 +14,11 @@ import com.abhay.booking_service.repository.BookingRepository;
 import com.abhay.booking_service.repository.BookingSlotRepository;
 import com.abhay.booking_service.repository.SlotRepository;
 import com.abhay.booking_service.service.BookingService;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
@@ -33,17 +38,24 @@ public class BookingServiceImp implements BookingService {
     private final SlotRepository slotRepository;
     private final BookingSlotRepository bookingSlotRepository;
     private final KafkaTemplate<String, BookingNotification> kafkaTemplate;
+    private final UserClient userClient;
 
-    public BookingServiceImp(BookingRepository bookingRepository, SlotRepository slotRepository, BookingSlotRepository bookingSlotRepository, KafkaTemplate<String, BookingNotification> kafkaTemplate) {
+    public BookingServiceImp(BookingRepository bookingRepository, SlotRepository slotRepository, BookingSlotRepository bookingSlotRepository, KafkaTemplate<String, BookingNotification> kafkaTemplate, UserClient userClient) {
         this.bookingRepository = bookingRepository;
         this.slotRepository = slotRepository;
         this.bookingSlotRepository = bookingSlotRepository;
         this.kafkaTemplate = kafkaTemplate;
+        this.userClient = userClient;
     }
 
 
     @Transactional
     public void placeBooking(BookingRequestDto bookingRequestDto) {
+        Booking booking = getBooking(bookingRequestDto);
+        bookingRepository.save(booking);
+    }
+
+    private Booking getBooking(BookingRequestDto bookingRequestDto) {
         Booking booking = new Booking();
         booking.setNurseId(bookingRequestDto.getNurseId());
         booking.setUserId(bookingRequestDto.getUserId());
@@ -59,7 +71,6 @@ public class BookingServiceImp implements BookingService {
         booking.setLastName(bookingRequestDto.getLastName());
         booking.setAddress(bookingRequestDto.getAddress());
         booking.setPin(bookingRequestDto.getPin());
-
         List<BookingSlot> bookingSlots = createBookingSlots(bookingRequestDto.getSlotDtos(), booking);
         bookingSlots.sort((slot1, slot2) -> slot1.getDate().compareTo(slot2.getDate()));
         booking.setSlots(bookingSlots);
@@ -69,9 +80,8 @@ public class BookingServiceImp implements BookingService {
         booking.setTotalDays(bookingRequestDto.getSlotDtos().size());
         booking.setPaymentId(bookingRequestDto.getPaymentId());
         booking.setServicePrice(bookingRequestDto.getServicePrice());
-
-        bookingRepository.save(booking);
         bookingSlotRepository.saveAll(bookingSlots);
+        return booking;
     }
 
     @Override
@@ -91,6 +101,8 @@ public class BookingServiceImp implements BookingService {
         Booking booking=bookingRepository.findById(bookingId).orElseThrow(()->new BookingNotFoundException("booking id is not valid "));
        ViewBooking response=new ViewBooking();
         response.setBookingId(booking.getId());
+        response.setNurseId(booking.getNurseId());
+        response.setUserId(booking.getUserId());
         response.setServiceName(booking.getServiceName());
         response.setServicePrice(booking.getServicePrice());
         response.setAddress(booking.getAddress());
@@ -123,14 +135,80 @@ public class BookingServiceImp implements BookingService {
         Booking booking = findBookingById(bookingId);
 
         if (status.equals(BookingStatus.CONFIRMED)) {
-            confirmBooking(booking);
+            try {
+
+                WalletRequest walletRequest =new WalletRequest(booking.getNurseId(),booking.getTotalAmount());
+                userClient.addFundWallet(walletRequest);
+                confirmBooking(booking);
+            }catch (FeignException ex) {
+                throw new RuntimeException("Failed to fetch nurse details", ex);
+            } catch (Exception ex) {
+                throw new RuntimeException("An unexpected error occurred while fetching booking details", ex);
+            }
+
         } else if (status.equals(BookingStatus.CANCELLED)) {
-            cancelBooking(booking);
+            try {
+                if (booking.getStartDate().isEqual(LocalDate.now())){
+                    throw new BookingStartDateException("Cannot cancel booking on the start date.");
+                }
+                WalletRequest walletRequest =new WalletRequest(booking.getUserId(),booking.getTotalAmount());
+                userClient.withdrawFound(walletRequest);
+                cancelBooking(booking);
+            }catch (FeignException ex) {
+                throw new RuntimeException("Failed to fetch nurse details", ex);
+            } catch (Exception ex) {
+                throw new RuntimeException("An unexpected error occurred while fetching booking details", ex);
+            }
+
         } else {
             throw new IllegalArgumentException("Unsupported booking status: " + status);
         }
 
         bookingRepository.save(booking);
+    }
+
+    @Override
+    public void cancelBooking(long bookingId) throws BookingStartDateException {
+        Booking booking =findBookingById(bookingId);
+        if (booking.getStartDate().isEqual(LocalDate.now())){
+            throw new BookingStartDateException("Cannot cancel booking on the start date.");
+        }
+        try {
+            WalletRequest walletRequest =new WalletRequest(booking.getUserId(),booking.getTotalAmount());
+            WalletRequest walletRequest1 =new WalletRequest(booking.getNurseId(),booking.getTotalAmount());
+            userClient.addFundWallet(walletRequest1);
+            userClient.withdrawFound(walletRequest);
+            booking.setStatus(BookingStatus.CANCELLED);
+            bookingRepository.save(booking);
+        }catch (FeignException ex) {
+            throw new RuntimeException("Failed to fetch nurse details", ex);
+        } catch (Exception ex) {
+            throw new RuntimeException("An unexpected error occurred while fetching booking details", ex);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void walletBooking(BookingRequestDto bookingRequestDto) {
+        try {
+            ResponseEntity<Double>walletResponse=userClient.walletBalance(bookingRequestDto.getUserId());
+            Double balance=walletResponse.getBody();
+            if (balance == null) {
+                throw new RuntimeException("Wallet balance response was null");
+            }
+            if (balance.longValue() < bookingRequestDto.getTotalAmount()) {
+                throw new InsufficientBalanceException("You don't have enough balance");
+            }
+            WalletRequest walletRequest =new WalletRequest(bookingRequestDto.getUserId(),bookingRequestDto.getTotalAmount());
+            Booking booking = getBooking(bookingRequestDto);
+            bookingRepository.save(booking);
+            userClient.withdrawFound(walletRequest);
+
+        }catch (FeignException ex) {
+            throw new RuntimeException("Failed to fetch nurse details", ex);
+        } catch (Exception ex) {
+            throw new RuntimeException("An unexpected error occurred while fetching booking details", ex);
+        }
     }
 
     private Booking findBookingById(long bookingId) {

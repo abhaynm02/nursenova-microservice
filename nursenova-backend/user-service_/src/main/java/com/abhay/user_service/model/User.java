@@ -1,5 +1,6 @@
 package com.abhay.user_service.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +37,9 @@ public class User implements UserDetails {
     private String phone;
     @Column(name = "status")
     private boolean status;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Wallet wallet;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

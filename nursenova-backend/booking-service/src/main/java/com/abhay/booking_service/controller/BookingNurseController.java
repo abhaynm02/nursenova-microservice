@@ -4,6 +4,7 @@ import com.abhay.booking_service.dto.BookingResponse;
 import com.abhay.booking_service.dto.SlotDto;
 import com.abhay.booking_service.dto.ViewBooking;
 import com.abhay.booking_service.exceptions.coustomexceptions.BookingNotFoundException;
+import com.abhay.booking_service.exceptions.coustomexceptions.BookingStartDateException;
 import com.abhay.booking_service.model.BookingStatus;
 import com.abhay.booking_service.service.BookingService;
 import com.abhay.booking_service.service.serviceImp.SlotServiceImp;
@@ -67,7 +68,7 @@ public class BookingNurseController{
     public ResponseEntity<ViewBooking>findBookingById(@PathVariable long bookingId){
         return new ResponseEntity<>(bookingService.findByBookingId(bookingId),HttpStatus.OK);
     }
-    @PatchMapping("/update/booking/status/{bookingId}")
+    @PostMapping("/update/booking/status/{bookingId}")
     @PreAuthorize("hasRole('ROLE_NURSE')")
     public ResponseEntity<String> updateBookingStatus(@PathVariable long bookingId, @RequestParam  BookingStatus status) {
         try {
@@ -78,5 +79,11 @@ public class BookingNurseController{
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the booking status");
         }
+    }
+    @PostMapping("/booking/cancel/{bookingId}")
+    @PreAuthorize("hasRole('ROLE_NURSE')")
+    public ResponseEntity<String>cancelBooking(@PathVariable long bookingId) throws BookingStartDateException {
+        bookingService.cancelBooking(bookingId);
+        return ResponseEntity.ok("Booking canceled successfully");
     }
 }

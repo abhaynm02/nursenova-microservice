@@ -21,6 +21,7 @@ public class NurseController {
     public NurseController(UserServiceImp userServiceImp, NurseServiceImp nurseServiceImp) {
         this.userServiceImp = userServiceImp;
         this.nurseServiceImp = nurseServiceImp;
+
     }
 
     @GetMapping("/profile/{username}")

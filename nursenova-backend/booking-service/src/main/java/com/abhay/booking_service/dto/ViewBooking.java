@@ -15,6 +15,8 @@ import java.util.List;
 public class ViewBooking {
    private long bookingId;
     private String serviceName;
+    private String userId;
+    private String nurseId;
     private long servicePrice;
     private long totalAmount;
     private long totalDays;

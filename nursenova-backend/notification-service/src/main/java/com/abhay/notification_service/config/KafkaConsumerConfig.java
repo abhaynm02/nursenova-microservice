@@ -1,5 +1,6 @@
 package com.abhay.notification_service.config;
 
+import com.abhay.notification_service.dto.BookingNotification;
 import com.abhay.notification_service.dto.OtpNotification;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -44,6 +45,22 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, OtpNotification> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(otpNotificationConsumerFactory());
+        return factory;
+    }
+
+    public ConsumerFactory<String, BookingNotification> bookingNotificationConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(
+                consumerConfigs(),
+                new StringDeserializer(),
+                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(BookingNotification.class, false))
+        );
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, BookingNotification> bookingNotificationConcurrentKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, BookingNotification> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(bookingNotificationConsumerFactory());
         return factory;
     }
 }

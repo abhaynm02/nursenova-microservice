@@ -74,6 +74,12 @@ public class BookingUserController {
         bookingService.placeBooking(requestDto);
         return new ResponseEntity<>("Service booked successfully",HttpStatus.OK);
     }
+    @PostMapping("/book/service/wallet")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?>bookServiceUsingWalletBalance(@RequestBody BookingRequestDto requestDto){
+        bookingService.walletBooking(requestDto);
+        return ResponseEntity.ok("service booked successfully");
+    }
     @GetMapping("/bookings/{userId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Page<UserBookingsDto>>findUserBookings(@PathVariable String userId,
@@ -83,10 +89,17 @@ public class BookingUserController {
 
         return new ResponseEntity<>(userBookingService.findBookingsForUser(pageable,userId),HttpStatus.OK);
     }
-     @GetMapping("/find/booking/{bookingId}")
+    @GetMapping("/find/booking/{bookingId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<UserBookingResponseDto>findBookingById(@PathVariable long bookingId){
         return new ResponseEntity<>(userBookingService.viewBookingDetails(bookingId),HttpStatus.OK);
+     }
+
+     @PostMapping("/booking/cancel/{bookingId}")
+     @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<String>cancelBooking(@PathVariable long bookingId){
+        userBookingService.cancelBooking(bookingId);
+        return ResponseEntity.ok("booking canceled successfully");
      }
 
 //    @PostMapping("/payment/execute")

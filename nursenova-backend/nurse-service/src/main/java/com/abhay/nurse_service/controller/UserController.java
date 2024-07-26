@@ -2,6 +2,7 @@ package com.abhay.nurse_service.controller;
 
 import com.abhay.nurse_service.dto.CheckoutResponse;
 import com.abhay.nurse_service.dto.ViewNurseDto;
+import com.abhay.nurse_service.service.CheckoutService;
 import com.abhay.nurse_service.service.NurseServiceI;
 import com.abhay.nurse_service.service.serviceImp.UserHomeServiceImp;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserHomeServiceImp userHomeServiceImp;
     private final NurseServiceI nurseServiceI;
+    private final CheckoutService checkoutService;
 
-    public UserController(UserHomeServiceImp userHomeServiceImp, NurseServiceI nurseServiceI) {
+    public UserController(UserHomeServiceImp userHomeServiceImp, NurseServiceI nurseServiceI, CheckoutService checkoutService) {
         this.userHomeServiceImp = userHomeServiceImp;
         this.nurseServiceI = nurseServiceI;
+        this.checkoutService = checkoutService;
     }
 
 
@@ -37,6 +40,6 @@ public class UserController {
     public ResponseEntity<CheckoutResponse>checkoutDetails(@RequestParam String nurseId,
                                                            @RequestParam long serviceId,@RequestParam long totalDays){
         log.info("totalDays{}",totalDays);
-        return new ResponseEntity<>(nurseServiceI.checkoutDetails(nurseId,serviceId,totalDays),HttpStatus.OK);
+        return new ResponseEntity<>(checkoutService.checkoutDetails(nurseId,serviceId,totalDays),HttpStatus.OK);
     }
 }

@@ -1,6 +1,7 @@
 package com.abhay.notification_service.consumer;
 
 
+import com.abhay.notification_service.dto.BookingNotification;
 import com.abhay.notification_service.dto.OtpNotification;
 import com.abhay.notification_service.email.EmailUtil;
 import jakarta.mail.MessagingException;
@@ -24,5 +25,12 @@ public class kafkaConsumer {
     public void consumeMessage(OtpNotification notification) throws MessagingException, UnsupportedEncodingException {
         emailUtil.sentOtpEmail(notification.getEmail(),notification.getOtp());
         log.info("message{},{}",notification.getEmail(),notification.getOtp());
+    }
+    @KafkaListener(topics = "bookingAccept",
+            groupId = "otpNotification",
+            containerFactory ="bookingNotificationConcurrentKafkaListenerContainerFactory" )
+    public void bookingAcceptNotificationAccept(BookingNotification notification) throws MessagingException {
+        emailUtil.sendBookingConfirmation(notification);
+        log.info("Booking accept notification :{}",notification.getEmail());
     }
 }

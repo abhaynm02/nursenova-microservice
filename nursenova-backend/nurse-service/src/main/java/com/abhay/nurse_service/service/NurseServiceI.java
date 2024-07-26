@@ -19,5 +19,5 @@ public interface NurseServiceI {
 
     void deleteDutyType(long dutyId);
 
-    CheckoutResponse checkoutDetails(String nurseId, long serviceId,long totalDays);
+
 }
