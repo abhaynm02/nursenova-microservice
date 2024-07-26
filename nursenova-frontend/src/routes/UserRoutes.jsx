@@ -7,6 +7,7 @@ import PaymentSuccessPage from '../component/PaymentSuccessPage'
 
 
 
+
 // Lazy load components
 const LoginPage = lazy(() => import('../pages/LoginPage'))
 const OtpPage = lazy(() => import('../pages/OtpPage'))
@@ -21,6 +22,9 @@ const DisplayNurses = lazy(() => import('../component/DisplayNurses'))
 const UserViewNurse = lazy(() => import('../component/UserViewNurse'))
 const Booking =lazy(()=>import('../component/Booking'))
 const Checkout =lazy(()=>import('../component/Checkout'))
+const  UserBookings =lazy(()=>import('../component/UserBookings'))
+const  UserViewBooking =lazy(()=>import('../component/UserViewBooking'))
+const  About =lazy(()=>import('../component/About'))
 
 const UserRoutes = () => {
   return (
@@ -37,10 +41,13 @@ const UserRoutes = () => {
             <Route path='/services' element={<UserServices />} />
             <Route path='/work-withus' element={<WorkWithUs />} />
             <Route path='/nurses/service/:location/:serviceId' element={<DisplayNurses />} />
+            <Route path='/about' element={<About></About>}></Route>
             <Route element={<UserProtected />}>
               <Route path='/view/nurse/details/:userName/:serviceId' element={<UserViewNurse />} />
-              <Route path='/booking' element={<Booking/>}></Route>
+              <Route path='/booking' element={<Booking></Booking>}></Route>
               <Route path='/profile/*' element={<UserProfileRoutes />} />
+              <Route path='/bookings' element={<UserBookings></UserBookings>}></Route>
+              <Route path='/view/booking/:bookingId' element={<UserViewBooking></UserViewBooking>}></Route>
             </Route>
           </Route>
               <Route path='/success' element={<PaymentSuccessPage></PaymentSuccessPage>}></Route>

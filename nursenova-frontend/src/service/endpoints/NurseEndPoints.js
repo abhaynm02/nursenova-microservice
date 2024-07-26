@@ -15,6 +15,13 @@ const nurseRoutes ={
      createSlotForBooking:'/booking/nurse/create',
      findCreateSlots:'/booking/nurse/available/slots',
      deleteSlotById:'/booking/nurse/delete',
+     findBookngs:'/booking/nurse/find/bookings',
+     viewBookingDetails:'/booking/nurse/find/booking',
+     updateBookingstatus:'/booking/nurse/update/booking/status',
+     getWalletHistory:'/user/wallet/history',
+     cancelBooking:'/booking/nurse/booking/cancel',
+     getNurseMonthlyStats:'/booking/nurse/dashboard/chart',
+     getDashboardData:'/booking/nurse/dashboard',
 
 
 }

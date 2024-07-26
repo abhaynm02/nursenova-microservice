@@ -11,7 +11,8 @@ const DetailsSubmit = lazy(() => import('../component/nurseComponent/DetailsSubm
 const NurseHome = lazy(() => import('../component/nurseComponent/NurseHome'))
 const NurseProfileRoutes = lazy(() => import('./NurseProfileRoutes'))
 const NurseService = lazy(() => import('../component/nurseComponent/NurseService'))
-
+const NurseBookings = lazy(() => import('../component/nurseComponent/NurseBookings'))
+const ViewBooking = lazy(() => import('../component/nurseComponent/ViewBooking'))
 const NurseRoutes = () => {
   return (
     <div>
@@ -25,6 +26,8 @@ const NurseRoutes = () => {
               <Route path='/home' element={<NurseHome />} />
               <Route path='/services' element={<NurseService />} />
               <Route path='/profile/*' element={<NurseProfileRoutes />} />
+              <Route path='/bookings' element={<NurseBookings></NurseBookings>}></Route>
+              <Route path='/view/booking/:bookingId' element={<ViewBooking></ViewBooking>}></Route>
             </Route>
           </Route>
         </Routes>

@@ -1,3 +1,5 @@
+
+
 const userRoutes ={
       register:'/auth/register',
       otpVerification:'/auth/verify',
@@ -19,6 +21,12 @@ const userRoutes ={
       createOrder:'/booking/user/payment/create',
       approveOrder:'/booking/user/payment/execute',
       bookservice:'/booking/user/book/service',
+      findBookings:'/booking/user/bookings',
+      viewBookingsDetails:'/booking/user/find/booking',
+      cancelBooking:'/booking/user/booking/cancel',
+      walletBalance:'/user/wallet/total',
+      walletBooking:'/booking/user/book/service/wallet'
+      
 
 
 

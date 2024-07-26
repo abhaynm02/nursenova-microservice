@@ -1,5 +1,4 @@
 
-import { data } from "autoprefixer";
 import Api from "../service/axios";
 import userRoutes from "../service/endpoints/UserEndPoints";
 import errorHandle from "./error";
@@ -179,5 +178,52 @@ export const bookservice =async(data)=>{
     } catch (error) {
         return errorHandle(error);
         
+    }
+}
+
+export const findBookings =async(userId,page,size)=>{
+    try {
+        const response = await Api.get(`${userRoutes.findBookings}/${userId}?page=${page}&size=${size}`)
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+        
+    }
+}
+
+export const viewBookingDetails =async(bookingId)=>{
+    try {
+        const response =await Api.get(`${userRoutes.viewBookingsDetails}/${bookingId}`);
+        return response;
+        
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const cancelBooking =async(bookingId)=>{
+    try {
+        const response = await Api.post(`${userRoutes.cancelBooking}/${bookingId}`);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const getWalletBalance =async(userId)=>{
+    try {
+        const response =await Api.get(`${userRoutes.walletBalance}/${userId}`);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const bookServiceByWallet =async(data)=>{
+    try {
+        const response =await Api.post(userRoutes.walletBooking,data);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
     }
 }

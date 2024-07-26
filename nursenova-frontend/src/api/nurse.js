@@ -168,3 +168,63 @@ export const deleteSlotById =async(slotId)=>{
         return errorHandle(error);
     }
 }
+export const findBookngs =async(nurseId,page,size)=>{
+    try {
+        const response =await Api.get(`${nurseRoutes.findBookngs}/${nurseId}?page=${page}&size=${size}`);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+export const viewBookingDetails=async(bookingId)=>{
+    try {
+        const response =await Api.get(`${nurseRoutes.viewBookingDetails}/${bookingId}`);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const updateBookingstatus =async(bookingId,bookingStatus)=>{
+    try {
+        const response =await Api.post(`${nurseRoutes.updateBookingstatus}/${bookingId}?status=${bookingStatus}`);
+        return response;
+    } catch (error) {
+        return errorHandle(error)
+    }
+}
+
+export const getWalletHistory =async(userId,page,size)=>{
+    try {
+         const response = await Api.get(`${nurseRoutes.getWalletHistory}/${userId}?page=${page}&size=${size}`)
+         return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const cancelBooking =async(userId)=>{
+    try {
+        const response = await Api.post(`${nurseRoutes.cancelBooking}/${userId}`);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+
+export const getNurseMonthlyStats =async(nurseId)=>{
+    try {
+        const response =await Api.get(`${nurseRoutes.getNurseMonthlyStats}/${nurseId}`);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}
+export const getDashboardData =async(nurseId)=>{
+    try {
+        const response =await Api.get(`${nurseRoutes.getDashboardData}/${nurseId}`);
+        return response;
+    } catch (error) {
+        return errorHandle(error);
+    }
+}

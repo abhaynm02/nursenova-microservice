@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import PayPalButton from "./PayPalButton";
 import { Briefcase } from "react-feather";
 import { useLocation, useNavigate } from "react-router-dom";
-import { bookservice } from "../api/user";
+import { bookservice, bookServiceByWallet, getWalletBalance } from "../api/user";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 
 const Checkout = () => {
@@ -10,7 +12,8 @@ const Checkout = () => {
   const [servicePrice, setServicePrice] = useState();
   const [totalAmount, setTotalAmount] = useState();
   const [bookingData, setBookingData] = useState();
-  const walletBalance = 150; // Example wallet balance
+  const [walletBalance,setWalletBalance] =useState(0); // Example wallet balance
+  const userId = useSelector((state) => state.auth.email);
   const navigate=useNavigate();
   useEffect(() => {
     if (location.state?.data) {
@@ -19,6 +22,16 @@ const Checkout = () => {
       setBookingData(location.state.data);
       console.log(location.state.data);
     }
+    const fetchData=async(userId)=>{
+      try {
+      const response =await getWalletBalance(userId);
+      setWalletBalance(response.data)
+      console.log(response.data); 
+      } catch (error) {
+        
+      }
+    }
+    fetchData(userId);
   }, [location.state]);
 
   const handleSuccess = async (paymentId) => {
@@ -33,6 +46,22 @@ const Checkout = () => {
         
     }
   };
+
+  const walletPayment =async()=>{
+    if(walletBalance<totalAmount){
+      toast.error("You don't have enough balance");
+      return;
+    }
+    try {
+      const data=bookingData;
+      data.paymentId="wallet";
+      const response =await bookServiceByWallet(data);
+      if(response)navigate("/success")
+      
+    } catch (error) {
+      
+    }
+  }
 
   return (
     <div className="pt-16 w-full min-h-screen text-white relative overflow-hidden">
@@ -68,7 +97,9 @@ const Checkout = () => {
               handileSuccess={handleSuccess}
             ></PayPalButton>
 
-            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-between">
+            <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-between"
+            onClick={()=>walletPayment()}
+            >
               <span className="flex items-center">
                 <Briefcase className="w-5 h-5 mr-2" />
                 Pay with Wallet
